@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from numpy import _typing
 
 from src.estimators.abstract_estimator import AbstractEstimator

@@ -1,6 +1,6 @@
 import math
 
-from scipy.stats import expon, gamma
+from scipy.stats import expon
 
 from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiParametricEstimator
 from src.generators.nmv_generator import NMVGenerator

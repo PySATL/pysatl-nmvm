@@ -1,5 +1,5 @@
 import math
-from typing import Callable, TypedDict, Unpack
+from typing import TypedDict, Unpack
 
 import mpmath
 import numpy as np

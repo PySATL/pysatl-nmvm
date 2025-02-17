@@ -1,13 +1,13 @@
-from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu import (
-    SemiParametricGEstimationGivenMu,
-)
-from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.sigma_estimation_eigenvalue_based import (
     SemiParametricMeanSigmaEstimationEigenvalueBased,
 )
 from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.sigma_estimation_empirical import (
     SemiParametricMeanSigmaEstimationEmpirical,
 )
+from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu import (
+    SemiParametricGEstimationGivenMu,
+)
+from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 from src.register.algorithm_purpose import AlgorithmPurpose
 from src.register.register import Registry
 

@@ -1,6 +1,6 @@
 import math
 from bisect import bisect_left
-from typing import TypedDict, Unpack, Optional, Callable, Dict, List
+from typing import Callable, Dict, List, Optional, TypedDict, Unpack
 
 import numpy as np
 from numpy import _typing
@@ -164,15 +164,9 @@ class SemiParametricGEstimationGivenMuRQMCBased:
 
     def compute_integrals_for_x(self, x: float) -> float:
         """Compute integrals using RQMC for v-integration."""
-        # Интеграл по v от 0 до v_value
-        first_integral = RQMC(
-            lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value
-        ).rqmc()[0]  # Суммируем результаты массива
+        first_integral = RQMC(lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).rqmc()[0]
 
-        # Интеграл по v от -v_value до 0
-        second_integral = RQMC(
-            lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value
-        ).rqmc()[0]  # Суммируем результаты массива
+        second_integral = RQMC(lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).rqmc()[0]
 
         total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)

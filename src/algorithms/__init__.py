@@ -1,10 +1,10 @@
 from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu import (
     SemiParametricGEstimationGivenMu,
 )
-from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu_rqmc_based import (
     SemiParametricGEstimationGivenMuRQMCBased,
 )
+from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 from src.register.algorithm_purpose import AlgorithmPurpose
 from src.register.register import Registry
 

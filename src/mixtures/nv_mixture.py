@@ -53,7 +53,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         ppf = self.params.distribution.ppf(u)
         return (1 / np.sqrt(np.pi * 2 * ppf * np.abs(gamma**2))) * np.exp(-1 * d / (2 * ppf))
 
-    def _log_integrand_func(self, u: float, d: float, gamma: float):
+    def _log_integrand_func(self, u: float, d: float, gamma: float | int | np.int64) -> float:
         ppf = self.params.distribution.ppf(u)
         return -(ppf * np.log(np.pi * 2 * ppf * gamma**2) + d) / (2 * ppf)
 

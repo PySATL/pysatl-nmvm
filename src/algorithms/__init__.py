@@ -1,3 +1,6 @@
+from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.g_estimation_convolution import (
+    NMSemiParametricGEstimation,
+)
 from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu import (
     SemiParametricGEstimationGivenMu,
 )
@@ -10,3 +13,4 @@ ALGORITHM_REGISTRY.register("mu_estimation", AlgorithmPurpose.NMV_SEMIPARAMETRIC
 ALGORITHM_REGISTRY.register("g_estimation_given_mu", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     SemiParametricGEstimationGivenMu
 )
+ALGORITHM_REGISTRY.register("g_estimation_convolution", AlgorithmPurpose.NM_SEMIPARAMETRIC)(NMSemiParametricGEstimation)

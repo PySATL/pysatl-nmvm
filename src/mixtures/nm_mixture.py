@@ -65,6 +65,7 @@ class NormalMeanMixtures(AbstractMixtures):
 
         Args:
             n (): Moment ordinal
+            params (): Parameters of integration algorithm
 
         Returns: moment approximation and error tolerance
 
@@ -85,6 +86,7 @@ class NormalMeanMixtures(AbstractMixtures):
 
         Args:
             n (): Moment ordinal
+            params (): Parameters of integration algorithm
 
         Returns: moment approximation and error tolerance
 

@@ -38,8 +38,8 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self) -> Any:
-        pass
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
+        raise NotImplementedError()
 
     def _classical_cdf(self, s: float, x: float) -> float:
         beta = self.params.beta

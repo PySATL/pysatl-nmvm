@@ -7,7 +7,6 @@ from src.generators.nm_generator import NMGenerator
 from src.mixtures.nm_mixture import *
 
 
-@pytest.mark.ci
 class TestMixingNormal:
     test_mixture_size = 100000
     generator = NMGenerator()

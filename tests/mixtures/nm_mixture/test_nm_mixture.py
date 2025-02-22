@@ -40,7 +40,6 @@ def apply_params_grid(func_name, mix_and_distrib):
     return result
 
 
-@pytest.mark.ci
 class TestNormalMeanMixturesBasicNormal:
     @pytest.fixture
     def generate_classic_distributions(self):
@@ -146,7 +145,6 @@ class TestNormalMeanMixtureNormal:
         assert result.mean() < 1e-4
 
 
-@pytest.mark.ci
 class TestSkewNormalDistribution:
     @pytest.fixture
     def generate_classic_distributions(self):

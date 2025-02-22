@@ -92,7 +92,6 @@ class TestNormalMeanMixturesBasicNormal:
         assert result.mean() < 1e-4
 
 
-@pytest.mark.ci
 class TestNormalMeanMixtureNormal:
     @pytest.fixture
     def generate_classic_distributions(self):

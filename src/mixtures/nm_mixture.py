@@ -57,7 +57,7 @@ class NormalMeanMixtures(AbstractMixtures):
             raise ValueError("Gamma cant be zero")
         return data_class
 
-    def compute_moment(self) -> Any:
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
         raise NotImplementedError("Must implement compute_moment")
 
     def _canonical_compute_cdf(self, x: float, params: dict) -> tuple[float, float]:

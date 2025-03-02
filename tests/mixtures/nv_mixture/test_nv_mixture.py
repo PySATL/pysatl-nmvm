@@ -9,16 +9,11 @@ from src.mixtures.nv_mixture import NormalVarianceMixtures
 
 
 def get_datasets(mixture_func, distribution_func, values):
-    mixture_result, norm_result = np.vectorize(mixture_func)(values, {"error_tolerance": 0.001, "i_max": 300})[0], np.vectorize(
-        distribution_func
-    )(values)
-    return norm_result, mixture_result
-
-def get_datasets_moments(mixture_func, distribution_func, values):
-    mixture_result, norm_result = np.vectorize(mixture_func)(values, {"epsrel": 1e-015, "limit": 100000})[
+    mixture_result, norm_result = np.vectorize(mixture_func)(values, {"error_tolerance": 0.001, "i_max": 300})[
         0
     ], np.vectorize(distribution_func)(values)
     return norm_result, mixture_result
+
 
 def create_mixture_and_grid(params):
     nm_mixture = NormalVarianceMixtures(**params)
@@ -34,7 +29,7 @@ def apply_params_grid(func_name, mix_and_distrib):
                 "cdf": (mixture.compute_cdf, distribution.cdf),
                 "pdf": (mixture.compute_pdf, distribution.pdf),
                 "log": (mixture.compute_logpdf, distribution.logpdf),
-                "moment": (mixture.compute_moment, distribution.moment)
+                "moment": (mixture.compute_moment, distribution.moment),
             }
             if func_name == "moment":
                 values = [int(mixture.params.distribution.kwds["scale"])]

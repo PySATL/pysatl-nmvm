@@ -49,8 +49,19 @@ class NormalVarianceMixtures(AbstractMixtures):
         Returns: moment approximation and error tolerance
         """
         gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
+
         def integrate_func(u: float) -> float:
-            return sum([binom(n, k) * (gamma ** k) * (self.params.alpha ** (n - k)) * (self.params.distribution.ppf(u) ** (k/2)) * norm.moment(k) for k in range(0, n + 1)])
+            return sum(
+                [
+                    binom(n, k)
+                    * (gamma**k)
+                    * (self.params.alpha ** (n - k))
+                    * (self.params.distribution.ppf(u) ** (k / 2))
+                    * norm.moment(k)
+                    for k in range(0, n + 1)
+                ]
+            )
+
         result = RQMC(integrate_func, **params)()
         return result
 

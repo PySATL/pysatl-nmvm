@@ -5,7 +5,7 @@ import pytest
 from scipy.stats import halfnorm, norm, skewnorm
 from sklearn.metrics import mean_absolute_error
 
-from src.mixtures.nm_mixture import NormalMeanMixtures
+from src.mixtures.nm_mixture import NormalMeanMixtures, _NMMCanonicalDataCollector, _NMMClassicDataCollector
 
 
 def create_mixture_and_grid(params):
@@ -38,6 +38,57 @@ def apply_params_grid(func_name, mix_and_distrib):
             result.append(mix_result)
     result = np.array([mean_absolute_error(*pair.result()) for pair in result])
     return result
+
+
+@pytest.mark.ci
+class TestParametersValidation:
+    @pytest.mark.parametrize(
+        "params",
+        [
+            {},
+            {"alpha": 0, "beta": 1, "gamma": 1, "distribution": norm, "some_unexpected_parameter": 3},
+            {"alpha": 0, "beta": 1, "gamma": 1},
+            {"alpha": [3], "beta": 1, "gamma": 1, "distribution": norm},
+            {"alpha": 1, "beta": [1], "gamma": 1, "distribution": norm},
+            {"alpha": 1, "beta": 1, "gamma": norm, "distribution": norm},
+            {"alpha": 1, "beta": 1, "gamma": 1, "distribution": 1},
+        ],
+    )
+    def test_dataclass_creation_classic_form(self, params):
+        with pytest.raises(ValueError):
+            nm_mixture = NormalMeanMixtures("classical", **params)
+
+    @pytest.mark.parametrize(
+        "params",
+        [
+            {},
+            {"sigma": 1, "distribution": norm, "some_unexpected_parameter": 3},
+            {"sigma": 1},
+            {"sigma": [3], "distribution": norm},
+            {"sigma": 1, "distribution": 1},
+        ],
+    )
+    def test_dataclass_creation_canonical_form(self, params):
+        with pytest.raises(ValueError):
+            nm_mixture = NormalMeanMixtures("canonical", **params)
+
+    @pytest.mark.parametrize(
+        "params",
+        [
+            {"mixture_form": "classical", "alpha": 0, "beta": 1, "gamma": 0, "distribution": norm},
+            {"mixture_form": "canonical", "sigma": 0, "distribution": norm},
+        ],
+    )
+    def test_mixture_params_validation(self, params):
+        with pytest.raises(ValueError):
+            nm_mixture = NormalMeanMixtures(**params)
+
+    def test_dataclass_type(self):
+        classic_mixture = NormalMeanMixtures("classical", alpha=0, beta=1, gamma=1, distribution=norm)
+        canonical_mixture = NormalMeanMixtures("canonical", sigma=1, distribution=norm)
+        assert isinstance(classic_mixture.params, _NMMClassicDataCollector) and isinstance(
+            canonical_mixture.params, _NMMCanonicalDataCollector
+        )
 
 
 class TestNormalMeanMixturesBasicNormal:

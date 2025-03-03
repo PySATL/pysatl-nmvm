@@ -51,8 +51,10 @@ class NormalMeanMixtures(AbstractMixtures):
         """
 
         data_class = super()._params_validation(data_collector, params)
-        if hasattr(data_class, "sigma") and data_class.sigma < 0:
-            raise ValueError("Sigma is negative")
+        if hasattr(data_class, "sigma") and data_class.sigma <= 0:
+            raise ValueError("Sigma cant be zero or negative")
+        if hasattr(data_class, "gamma") and data_class.gamma == 0:
+            raise ValueError("Gamma cant be zero")
         return data_class
 
     def compute_moment(self) -> Any:

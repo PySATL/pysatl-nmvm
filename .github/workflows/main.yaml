@@ -21,4 +21,4 @@ jobs:
       - name: "mypy"
         run: mypy
       - name: "pytests"
-        run: python -m pytest
+        run: python -m pytest -v -m ci

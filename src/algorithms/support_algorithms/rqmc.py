@@ -148,7 +148,7 @@ class RQMC:
 
         """
         diff = np.sum(np.power(values - approximation, 2))
-        return np.sqrt(1 / (self.count - 1) * diff)
+        return (1 / (self.count - 1) * diff) ** 0.5
 
     def rqmc(self) -> tuple[float, float]:
         """Main function of algorithm
@@ -163,14 +163,14 @@ class RQMC:
         approximation, values = self._estimator(sample)
         current_error_tolerance = self._sigma(values, approximation) * self.z
         for i in range(1, self.i_max):
-            if current_error_tolerance < self.error_tolerance:
-                return approximation, current_error_tolerance
+            if current_error_tolerance.real < self.error_tolerance:
+                return approximation, current_error_tolerance.real
             sobol_sampler.reset()
             sobol_sample = np.repeat(sobol_sampler.random(self.base_n * (i + 1)).transpose(), self.count, axis=0)
             sample = self._digital_shift(sobol_sample, xor_sample)
             approximation, values = self._update(i, values, sample)
             current_error_tolerance = self._sigma(values, approximation) * self.z
-        return approximation, current_error_tolerance
+        return approximation, current_error_tolerance.real
 
     def _digital_shift(self, sobol_sequences: tpg.NDArray, xor_sample: tpg.NDArray) -> tpg.NDArray:
         """Digital shift of the sobol sequence

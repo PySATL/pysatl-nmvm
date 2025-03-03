@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+from scipy.integrate import quad
+from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
@@ -57,8 +59,61 @@ class NormalMeanMixtures(AbstractMixtures):
             raise ValueError("Gamma cant be zero")
         return data_class
 
-    def compute_moment(self) -> Any:
-        raise NotImplementedError("Must implement compute_moment")
+    def _classical_moment(self, n: int, params: dict) -> tuple[float, float]:
+        """
+        Compute n-th moment of classical NMM
+
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+
+        """
+        mixture_moment = 0
+        error_tolerance = 0
+        for k in range(0, n + 1):
+            for l in range(0, k + 1):
+                coefficient = binom(n, n - k) * binom(k, k - l) * (self.params.beta ** (k - l)) * (self.params.gamma**l)
+                mixing_moment = quad(lambda u: self.params.distribution.ppf(u) ** (k - l), 0, 1, **params)
+                error_tolerance += (self.params.beta ** (k - l)) * mixing_moment[1]
+                mixture_moment += coefficient * (self.params.alpha ** (n - k)) * mixing_moment[0] * norm.moment(l)
+        return mixture_moment, error_tolerance
+
+    def _canonical_moment(self, n: int, params: dict) -> tuple[float, float]:
+        """
+        Compute n-th moment of canonical NMM
+
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+
+        """
+        mixture_moment = 0
+        error_tolerance = 0
+        for k in range(0, n + 1):
+            coefficient = binom(n, n - k) * (self.params.sigma**k)
+            mixing_moment = quad(lambda u: self.params.distribution.ppf(u) ** (n - k), 0, 1, **params)
+            error_tolerance += mixing_moment[1]
+            mixture_moment += coefficient * mixing_moment[0] * norm.moment(k)
+        return mixture_moment, error_tolerance
+
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
+        """
+        Compute n-th moment of  NMM
+
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+
+        """
+        if isinstance(self.params, _NMMClassicDataCollector):
+            return self._classical_moment(n, params)
+        return self._canonical_moment(n, params)
 
     def _canonical_compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
         """

@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import Any
 
 import numpy as np
+from scipy.special import binom
 from scipy.stats import geninvgauss, norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
@@ -39,8 +40,69 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
+    def _classical_moment(self, n: int, params: dict) -> tuple[float, float]:
+        """
+        Compute n-th moment of classical NMM
+
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+
+        """
+
+        def integral_func(u: float) -> float:
+            result = 0
+            for k in range(0, n + 1):
+                for l in range(0, k + 1):
+                    result += (
+                        binom(n, n - k)
+                        * binom(k, k - l)
+                        * (self.params.beta ** (k - l))
+                        * (self.params.gamma**l)
+                        * self.params.distribution.ppf(u) ** (k - l / 2)
+                        * (self.params.alpha ** (n - k))
+                        * norm.moment(l)
+                    )
+            return result
+
+        rqmc = RQMC(lambda u: integral_func(u), **params)
+        return rqmc()
+
+    def _canonical_moment(self, n: int, params: dict) -> tuple[float, float]:
+        """
+        Compute n-th moment of classical NMM
+
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+
+        """
+
+        def integral_func(u: float) -> float:
+            result = 0
+            for k in range(0, n + 1):
+                for l in range(0, k + 1):
+                    result += (
+                        binom(n, n - k)
+                        * binom(k, k - l)
+                        * (self.params.nu ** (k - l))
+                        * self.params.distribution.ppf(u) ** (k - l / 2)
+                        * (self.params.alpha ** (n - k))
+                        * norm.moment(l)
+                    )
+            return result
+
+        rqmc = RQMC(lambda u: integral_func(u), **params)
+        return rqmc()
+
     def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        raise NotImplementedError()
+        if isinstance(self.params, _NMVMClassicDataCollector):
+            return self._classical_moment(n, params)
+        return self._canonical_moment(n, params)
 
     def _classical_cdf(self, x: float, params: dict) -> tuple[float, float]:
         def _inner_func(u: float) -> float:

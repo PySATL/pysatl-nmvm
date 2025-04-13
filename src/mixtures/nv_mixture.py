@@ -3,7 +3,6 @@ from functools import lru_cache
 from typing import Any
 
 import numpy as np
-from scipy.integrate import quad
 from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen

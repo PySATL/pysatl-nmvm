@@ -32,7 +32,7 @@ def apply_params_grid(func_name, mix_and_distrib):
                 "moment": (mixture.compute_moment, distribution.moment),
             }
             if func_name == "moment":
-                values = [int(mixture.params.distribution.kwds["scale"])]
+                values = list(range(int(mixture.params.distribution.kwds["scale"])))
                 mix_result = executor.submit(get_datasets, *funcs[func_name], values)
             else:
                 mix_result = executor.submit(get_datasets, *funcs[func_name], values)

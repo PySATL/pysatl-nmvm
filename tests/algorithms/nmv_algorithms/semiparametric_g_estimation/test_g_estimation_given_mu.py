@@ -25,6 +25,5 @@ class TestSemiParametricMixingDensityEstimationGivenMu:
         error = 0.0
         for i in range(len(x_data)):
             error += math.sqrt(min(x_data[i], 1) * (est.list_value[i] - real_g(x_data[i])) ** 2)
-            print(est.list_value[i], real_g(x_data[i]), error)
         error = error / len(x_data)
         assert error < n ** (-0.5) * 2

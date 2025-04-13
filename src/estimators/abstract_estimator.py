@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import Self
 
 from numpy import _typing

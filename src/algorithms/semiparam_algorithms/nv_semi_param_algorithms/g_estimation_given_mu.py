@@ -9,7 +9,6 @@ from scipy.special import gamma
 
 from src.estimators.estimate_result import EstimateResult
 
-MU_DEFAULT_VALUE = 1.0
 GAMMA_DEFAULT_VALUE = 0.25
 
 
@@ -31,9 +30,9 @@ INTEGRATION_TOLERANCE_DEFAULT_VALUE: float = 1e-2
 INTEGRATION_LIMIT_DEFAULT_VALUE: int = 50
 
 
-class SemiParametricGEstimationGivenMu:
-    """Estimation of mixing density function g (xi density function) of NVM mixture represented in canonical form Y =
-    alpha + mu*xi + sqrt(xi)*N, where alpha = 0 and mu is given.
+class SemiParametricNVEstimation:
+    """Estimation of mixing density function g (xi density function) of NV mixture represented in canonical form Y =
+    alpha + sqrt(xi)*N, where alpha = 0 and mu = 0.
 
     Args:
         sample: sample of the analysed distribution
@@ -42,7 +41,6 @@ class SemiParametricGEstimationGivenMu:
     """
 
     class ParamsAnnotation(TypedDict, total=False):
-        mu: float
         gmm: float
         u_value: float
         v_value: float
@@ -60,7 +58,6 @@ class SemiParametricGEstimationGivenMu:
         self.sample: _typing.NDArray[np.float64] = np.array([]) if sample is None else sample
         self.n: int = len(self.sample)
         (
-            self.mu,
             self.gmm,
             self.u_value,
             self.v_value,
@@ -77,8 +74,7 @@ class SemiParametricGEstimationGivenMu:
     @staticmethod
     def _validate_kwargs(
         n: int, **kwargs: Unpack[ParamsAnnotation]
-    ) -> tuple[float, float, float, float, List[float], int, float, int]:
-        mu: float = kwargs.get("mu", MU_DEFAULT_VALUE)
+    ) -> tuple[float, float, float, List[float], int, float, int]:
         gmm: float = kwargs.get("gmm", GAMMA_DEFAULT_VALUE)
         u_value: float = kwargs.get("u_value", U_SEQUENCE_DEFAULT_VALUE(n))
         v_value: float = kwargs.get("v_value", V_SEQUENCE_DEFAULT_VALUE(n))
@@ -86,13 +82,13 @@ class SemiParametricGEstimationGivenMu:
         grid_size: int = kwargs.get("grid_size", GRID_SIZE_DEFAULT_VALUE)
         integration_tolerance: float = kwargs.get("integration_tolerance", INTEGRATION_TOLERANCE_DEFAULT_VALUE)
         integration_limit: int = kwargs.get("integration_limit", INTEGRATION_LIMIT_DEFAULT_VALUE)
-        return mu, gmm, u_value, v_value, x_data, grid_size, integration_tolerance, integration_limit
+        return gmm, u_value, v_value, x_data, grid_size, integration_tolerance, integration_limit
 
     def conjugate_psi(self, u: float) -> complex:
-        return complex((u**2) / 2, self.mu * u)
+        return complex((u**2) / 2, 0)  # mu = 0
 
     def psi(self, u: float) -> complex:
-        return complex((u**2) / 2, -self.mu * u)
+        return complex((u**2) / 2, 0)  # mu = 0
 
     def precompute_gamma_grid(self) -> None:
         self.v_grid = np.linspace(-self.v_value, self.v_value, self.grid_size)  # Symmetric grid
@@ -108,14 +104,12 @@ class SemiParametricGEstimationGivenMu:
     def first_u_integrand(self, u: float, v: float) -> np.ndarray:
         expon_factor = np.exp(-1j * u * self.sample)
         conjugate_psi_factor = self.conjugate_psi(u) ** complex(-self.gmm, -v)
-        conjugate_derivative_psi_factor = complex(u, self.mu)
-        return expon_factor * conjugate_psi_factor * conjugate_derivative_psi_factor
+        return expon_factor * conjugate_psi_factor
 
     def second_u_integrand(self, u: float, v: float) -> np.ndarray:
         expon_factor = np.exp(1j * u * self.sample)
         psi_factor = self.psi(u) ** complex(-self.gmm, -v)
-        derivative_psi_factor = complex(u, -self.mu)
-        return expon_factor * psi_factor * derivative_psi_factor
+        return expon_factor * psi_factor
 
     def precompute_u_integrals(self) -> None:
         self.first_u_integrals = np.zeros((self.grid_size, self.n), dtype=np.complex_)

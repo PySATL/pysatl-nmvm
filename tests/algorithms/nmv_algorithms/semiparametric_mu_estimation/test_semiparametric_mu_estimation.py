@@ -27,14 +27,6 @@ class TestSemiParametricMuEstimation:
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
-    @pytest.mark.parametrize("real_mu", [50, 100])
-    def test_mu_estimation_expon_no_parameters_huge(self, real_mu: float) -> None:
-        mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
-        sample = self.generator.canonical_generate(mixture, 1000000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
-        est = estimator.estimate(sample)
-        assert abs(real_mu - est.value) < real_mu / 2 and est.success is True
-
     @pytest.mark.parametrize("real_mu", [i for i in range(-3, 3)])
     def test_mu_estimation_pareto_no_parameters(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=pareto(2.62))

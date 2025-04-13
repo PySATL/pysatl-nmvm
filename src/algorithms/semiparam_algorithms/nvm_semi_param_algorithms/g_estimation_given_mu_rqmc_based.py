@@ -7,6 +7,7 @@ from numpy import _typing
 from scipy.integrate import quad_vec
 from scipy.special import gamma
 
+from src.algorithms.support_algorithms.rqmc import RQMC
 from src.estimators.estimate_result import EstimateResult
 
 MU_DEFAULT_VALUE = 1.0
@@ -31,7 +32,7 @@ INTEGRATION_TOLERANCE_DEFAULT_VALUE: float = 1e-2
 INTEGRATION_LIMIT_DEFAULT_VALUE: int = 50
 
 
-class SemiParametricGEstimationGivenMu:
+class SemiParametricGEstimationGivenMuRQMCBased:
     """Estimation of mixing density function g (xi density function) of NVM mixture represented in canonical form Y =
     alpha + mu*xi + sqrt(xi)*N, where alpha = 0 and mu is given.
 
@@ -162,23 +163,14 @@ class SemiParametricGEstimationGivenMu:
         return (self.second_u_integrals[idx] * x_power) / gamma_val
 
     def compute_integrals_for_x(self, x: float) -> float:
-        first_integral = quad_vec(
-            lambda v: self.first_v_integrand(v, x),
-            0,
-            self.v_value,
-            epsabs=self.integration_tolerance,
-            limit=self.integration_limit,
-        )[0]
-        second_integral = quad_vec(
-            lambda v: self.second_v_integrand(v, x),
-            -self.v_value,
-            0,
-            epsabs=self.integration_tolerance,
-            limit=self.integration_limit,
-        )[0]
-        total = np.sum(first_integral + second_integral) / self.denominator
+        """Compute integrals using RQMC for v-integration."""
+        first_integral = RQMC(lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).rqmc()[0]
+
+        second_integral = RQMC(lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).rqmc()[0]
+
+        total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
-    def algorithm(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
+    def algorithm(self, sample: np._typing.NDArray) -> EstimateResult:
         y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

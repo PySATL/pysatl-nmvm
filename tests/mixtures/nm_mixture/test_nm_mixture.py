@@ -25,6 +25,13 @@ def get_datasets(mixture_func, distribution_func, values):
     return norm_result, mixture_result
 
 
+def get_datasets_moments(mixture_func, distribution_func, values):
+    mixture_result, norm_result = np.vectorize(mixture_func)(values, {"epsrel": 1e-014, "limit": 100000})[
+        0
+    ], np.vectorize(distribution_func)(values)
+    return norm_result, mixture_result
+
+
 def apply_params_grid(func_name, mix_and_distrib):
     result = []
     with ProcessPoolExecutor(max_workers=4) as executor:
@@ -33,8 +40,13 @@ def apply_params_grid(func_name, mix_and_distrib):
                 "cdf": (mixture.compute_cdf, distribution.cdf),
                 "pdf": (mixture.compute_pdf, distribution.pdf),
                 "log": (mixture.compute_logpdf, distribution.logpdf),
+                "moment": (mixture.compute_moment, distribution.moment),
             }
-            mix_result = executor.submit(get_datasets, *funcs[func_name], values)
+            if func_name == "moment":
+                values = range(1, 8)
+                mix_result = executor.submit(get_datasets_moments, *funcs[func_name], values)
+            else:
+                mix_result = executor.submit(get_datasets, *funcs[func_name], values)
             result.append(mix_result)
     result = np.array([mean_absolute_error(*pair.result()) for pair in result])
     return result
@@ -142,6 +154,14 @@ class TestNormalMeanMixturesBasicNormal:
         result = apply_params_grid("log", generate_canonical_distributions)
         assert result.mean() < 1e-4
 
+    def test_nm_classical_moment(self, generate_classic_distributions):
+        result = apply_params_grid("moment", generate_classic_distributions)
+        assert result.mean() < 1e-4
+
+    def test_nm_canonical_moment(self, generate_canonical_distributions):
+        result = apply_params_grid("moment", generate_canonical_distributions)
+        assert result.mean() < 1e-4
+
 
 class TestNormalMeanMixtureNormal:
     @pytest.fixture
@@ -192,6 +212,14 @@ class TestNormalMeanMixtureNormal:
 
     def test_nm_canonical_log_pdf(self, generate_canonical_distributions):
         result = apply_params_grid("log", generate_canonical_distributions)
+        assert result.mean() < 1e-4
+
+    def test_nm_classical_moment(self, generate_classic_distributions):
+        result = apply_params_grid("moment", generate_classic_distributions)
+        assert result.mean() < 1e-4
+
+    def test_nm_canonical_moment(self, generate_canonical_distributions):
+        result = apply_params_grid("moment", generate_canonical_distributions)
         assert result.mean() < 1e-4
 
 
@@ -257,4 +285,12 @@ class TestSkewNormalDistribution:
 
     def test_sk_canonical_log_pdf(self, generate_canonical_distributions):
         result = apply_params_grid("log", generate_canonical_distributions)
+        assert result.mean() < 1e-4
+
+    def test_nm_classical_moment(self, generate_classic_distributions):
+        result = apply_params_grid("moment", generate_classic_distributions)
+        assert result.mean() < 1e-4
+
+    def test_nm_canonical_moment(self, generate_canonical_distributions):
+        result = apply_params_grid("moment", generate_canonical_distributions)
         assert result.mean() < 1e-4

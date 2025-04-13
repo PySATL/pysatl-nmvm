@@ -99,7 +99,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         rqmc = RQMC(lambda u: integral_func(u), **params)
         return rqmc()
 
-    def compute_moment(self, n, params) -> Any:
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
         if isinstance(self.params, _NMVMClassicDataCollector):
             return self._classical_moment(n, params)
         return self._canonical_moment(n, params)

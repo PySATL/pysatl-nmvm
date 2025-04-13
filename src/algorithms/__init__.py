@@ -7,6 +7,9 @@ from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.sigma_estimati
 from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_given_mu import (
     SemiParametricGEstimationGivenMu,
 )
+from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.g_estimation_post_widder import (
+    SemiParametricGEstimationPostWidder,
+)
 from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 from src.register.algorithm_purpose import AlgorithmPurpose
 from src.register.register import Registry
@@ -21,4 +24,7 @@ ALGORITHM_REGISTRY.register("sigma_estimation_eigenvalue_based", AlgorithmPurpos
 )
 ALGORITHM_REGISTRY.register("sigma_estimation_empirical", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
     SemiParametricMeanSigmaEstimationEmpirical
+)
+ALGORITHM_REGISTRY.register("g_estimation_post_widder", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
+    SemiParametricGEstimationPostWidder
 )

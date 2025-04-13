@@ -27,3 +27,6 @@ no_implicit_optional = "False"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--color=yes", "-s"]
+markers = [
+    "ci: test that run on ci",
+]

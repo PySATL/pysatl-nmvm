@@ -50,6 +50,7 @@ class TestHardFunctions:
         assert loss_func(lambda x: 0, rqmc.rqmc, 100)
 
 
+@pytest.mark.ci
 class TestArgsParse:
     @pytest.mark.parametrize(
         "args",
@@ -64,6 +65,5 @@ class TestArgsParse:
         ],
     )
     def test_args_parse(self, args):
-        print(args)
         with pytest.raises(ValueError):
             RQMC._args_validation(*args)

@@ -1,3 +1,6 @@
+from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.g_estimation_convolution import (
+    NMSemiParametricGEstimation,
+)
 from src.algorithms.semiparam_algorithms.nm_semi_param_algorithms.sigma_estimation_eigenvalue_based import (
     SemiParametricMeanSigmaEstimationEigenvalueBased,
 )
@@ -28,6 +31,7 @@ ALGORITHM_REGISTRY.register("mu_estimation", AlgorithmPurpose.NMV_SEMIPARAMETRIC
 ALGORITHM_REGISTRY.register("g_estimation_given_mu", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     SemiParametricGEstimationGivenMu
 )
+ALGORITHM_REGISTRY.register("g_estimation_convolution", AlgorithmPurpose.NM_SEMIPARAMETRIC)(NMSemiParametricGEstimation)
 ALGORITHM_REGISTRY.register("sigma_estimation_eigenvalue_based", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
     SemiParametricMeanSigmaEstimationEigenvalueBased
 )

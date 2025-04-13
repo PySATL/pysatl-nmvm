@@ -1,5 +1,4 @@
 import math
-
 from bisect import bisect_left
 from typing import Callable, Dict, List, Optional, TypedDict, Unpack
 

@@ -1,6 +1,5 @@
 import math
 
-
 import pytest
 from scipy.stats import expon, gamma
 

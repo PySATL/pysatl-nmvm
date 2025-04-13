@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import Any
 
 import numpy as np
+from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
@@ -39,7 +40,29 @@ class NormalVarianceMixtures(AbstractMixtures):
         super().__init__(mixture_form, **kwargs)
 
     def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        raise NotImplementedError("Must implement compute_moment")
+        """
+        Compute n-th moment of  NVM
+        Args:
+            n (): Moment ordinal
+            params (): Parameters of integration algorithm
+        Returns: moment approximation and error tolerance
+        """
+        gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
+
+        def integrate_func(u: float) -> float:
+            return sum(
+                [
+                    binom(n, k)
+                    * (gamma**k)
+                    * (self.params.alpha ** (n - k))
+                    * (self.params.distribution.ppf(u) ** (k / 2))
+                    * norm.moment(k)
+                    for k in range(0, n + 1)
+                ]
+            )
+
+        result = RQMC(integrate_func, **params)()
+        return result
 
     def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
         parametric_norm = norm(0, self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1)

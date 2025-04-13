@@ -28,7 +28,7 @@ class AbstractMixtures(metaclass=ABCMeta):
             raise AssertionError(f"Unknown mixture form: {mixture_form}")
 
     @abstractmethod
-    def compute_moment(self) -> Any: ...
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]: ...
 
     @abstractmethod
     def compute_cdf(self, x: float, params: dict) -> tuple[float, float]: ...
@@ -55,9 +55,9 @@ class AbstractMixtures(metaclass=ABCMeta):
 
         """
 
-        if len(params) == 0:
-            raise ValueError("Empty parameters dict")
         dataclass_fields = fields(data_collector)
+        if len(params) != len(dataclass_fields):
+            raise ValueError(f"Expected {len(dataclass_fields)} arguments, got {len(params)}")
         names_and_types = dict((field.name, field.type) for field in dataclass_fields)
         for pair in params.items():
             if pair[0] not in names_and_types:

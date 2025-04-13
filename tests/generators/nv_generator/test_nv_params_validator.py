@@ -4,6 +4,7 @@ from scipy.stats import norm
 from src.mixtures.nv_mixture import NormalVarianceMixtures
 
 
+@pytest.mark.ci
 class TestGenerateParamsValidators:
     @pytest.mark.parametrize(
         "params",

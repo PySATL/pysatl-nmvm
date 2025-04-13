@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any
 
 import numpy as np
-from scipy.stats import norm, rv_continuous
+from scipy.stats import geninvgauss, norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.log_rqmc import LogRQMC
@@ -15,9 +16,9 @@ class _NMVMClassicDataCollector:
     """TODO: Change typing from float | int | etc to Protocol with __addition__ __multiplication__ __subtraction__"""
 
     """Data Collector for parameters of classical NMVM"""
-    alpha: float | int
-    beta: float | int
-    gamma: float | int
+    alpha: float | int | np.int64
+    beta: float | int | np.int64
+    gamma: float | int | np.int64
     distribution: rv_frozen | rv_continuous
 
 
@@ -26,8 +27,8 @@ class _NMVMCanonicalDataCollector:
     """TODO: Change typing from float | int | etc to Protocol with __addition__ __multiplication__ __subtraction__"""
 
     """Data Collector for parameters of canonical NMVM"""
-    alpha: float | int
-    mu: float | int
+    alpha: float | int | np.int64
+    mu: float | int | np.int64
     distribution: rv_frozen | rv_continuous
 
 
@@ -38,40 +39,91 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self) -> Any:
-        pass
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
+        raise NotImplementedError()
 
-    def _classical_cdf(self, s: float, x: float) -> float:
-        beta = self.params.beta
-        gamma = self.params.gamma if isinstance(self.params, _NMVMClassicDataCollector) else 1
-        parametric_norm = norm(0, gamma)
-        return parametric_norm.cdf(
-            (x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(s))
-            - beta / gamma**2 * np.sqrt(self.params.distribution.ppf(s))
-        )
+    def _classical_cdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = lru_cache()(self.params.distribution.ppf)(u)
+            point = (x - self.params.alpha) / (np.sqrt(ppf) * self.params.gamma) - (
+                self.params.beta / self.params.gamma * np.sqrt(ppf)
+            )
+            return norm.cdf(point)
 
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        rqmc = RQMC(lambda s: self._classical_cdf(s, x), **params)
+        rqmc = RQMC(lambda u: _inner_func(u), **params)
         return rqmc()
 
-    def _cdf_under_func(self, s: float, x: float) -> float:
-        def first_exp(s: float) -> float:
-            return np.exp(-((x**2) / 2) / s)
+    def _canonical_cdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            point = (x - self.params.alpha) / (np.sqrt(ppf)) - (self.params.mu * np.sqrt(ppf))
+            return norm.cdf(point)
 
-        def second_exp(s: float, beta: float) -> float:
-            return np.exp(beta**2 * s / 2)
+        rqmc = RQMC(lambda u: _inner_func(u), **params)
+        return rqmc()
 
-        def sqrt_part(s: float) -> float:
-            return np.sqrt(2 * np.pi * self.params.distribution.ppf(s))
-
+    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
         if isinstance(self.params, _NMVMClassicDataCollector):
-            return first_exp(s) * second_exp(s, self.params.beta) / sqrt_part(s)
-        return first_exp(s) * second_exp(s, self.params.mu) / sqrt_part(s)
+            return self._classical_cdf(x, params)
+        return self._canonical_cdf(x, params)
+
+    def _classical_pdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            return (
+                1
+                / np.sqrt(2 * np.pi * ppf * self.params.gamma**2)
+                * np.exp(
+                    -((x - self.params.alpha) ** 2 + self.params.beta**2 * ppf**2) / (2 * ppf * self.params.gamma**2)
+                )
+            )
+
+        rqmc = RQMC(lambda u: _inner_func(u), **params)()
+        return np.exp(self.params.beta * (x - self.params.alpha) / self.params.gamma**2) * rqmc[0], rqmc[1]
+
+    def _canonical_pdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            return (
+                1
+                / np.sqrt(2 * np.pi * ppf)
+                * np.exp(-((x - self.params.alpha) ** 2 + self.params.mu**2 * ppf**2) / (2 * ppf))
+            )
+
+        rqmc = RQMC(lambda u: _inner_func(u), **params)
+        res = rqmc()
+        return np.exp(self.params.mu * (x - self.params.alpha)) * res[0], res[1]
+
+    def _classical_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            return -(
+                (x - self.params.alpha) ** 2
+                + ppf**2 * self.params.beta**2
+                + ppf * self.params.gamma**2 * np.log(2 * np.pi * ppf * self.params.gamma**2)
+            ) / (2 * ppf * self.params.gamma**2)
+
+        rqmc = LogRQMC(lambda u: _inner_func(u), **params)
+        return rqmc()
+
+    def _canonical_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
+        def _inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            return -((x - self.params.alpha) ** 2 + ppf**2 * self.params.mu**2 + ppf * np.log(2 * np.pi * ppf)) / (
+                2 * ppf
+            )
+
+        rqmc = LogRQMC(lambda u: _inner_func(u), **params)
+        return rqmc()
 
     def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        rqmc = RQMC(lambda s: self._cdf_under_func(s, x), **params)
-        return np.exp(self.params.mu * x) * rqmc()
+        if isinstance(self.params, _NMVMClassicDataCollector):
+            return self._classical_pdf(x, params)
+        return self._canonical_pdf(x, params)
 
-    def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
-        log_rqmc = LogRQMC(lambda s: self._cdf_under_func(s, x), **params)
-        return self.params.mu * x * log_rqmc()
+    def compute_logpdf(self, x: float, params: dict) -> tuple[Any, float]:
+        if isinstance(self.params, _NMVMClassicDataCollector):
+            int_result = self._classical_log_pdf(x, params)
+            return self.params.beta * (x - self.params.alpha) / self.params.gamma**2 + int_result[0], int_result[1]
+        int_result = self._canonical_log_pdf(x, params)
+        return self.params.mu * (x - self.params.alpha) + int_result[0], int_result[1]

@@ -38,7 +38,7 @@ class NormalVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self) -> Any:
+    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
         raise NotImplementedError("Must implement compute_moment")
 
     def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:

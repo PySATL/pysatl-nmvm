@@ -59,7 +59,7 @@ class NMSemiParametricGEstimation:
         return smm / self.n
 
     def characteristic_function_normal(self, t: float) -> complex:
-        return np.exp(-0.5 * (self.sigma**2) * t**2)
+        return np.exp(-0.5 * t**2)
 
     def characteristic_function_xi(self, t: float) -> complex:
         denominator = np.maximum(np.abs(self.characteristic_function_normal(self.sigma * t)), 1e-10)

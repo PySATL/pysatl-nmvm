@@ -11,14 +11,14 @@ jobs:
         with:
           python-version: 3.12.4
           cache: "pip"
-      - name: "installation"
+      - name: "Install dependencies"
         run: |
           pip install -r requirements.txt -r requirements.dev.txt
-      - name: "black"
-        run: black . --check --diff --color
-      - name: "isort"
-        run: isort . --check --diff
-      - name: "mypy"
+      - name: "Ruff checks"
+        run: ruff check . --show-source --diff
+      - name: "Format check"
+        run: ruff format . --check --diff
+      - name: "Mypy"
         run: mypy
-      - name: "pytests"
+      - name: "Pytest"
         run: python -m pytest -v -m ci

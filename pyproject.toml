@@ -1,17 +1,24 @@
 [metadata]
-name = "PySATL_NMVM_Module "
+name = "PySATL_NMVM_Module"
 author = "Engelsgeduld, Andreev Sergey, Sazonova Irina"
 url = "https://github.com/Engelsgeduld/PySATL_NMVM_Module"
 
-[tool.isort]
-profile = "black"
-line_length = 120
-
-[tool.black]
+[tool.ruff]
 line-length = 120
+target-version = "py312"
+select = [
+    "E", "F", "W", "I",
+    "UP", "C90", "BLK",
+    "NPY", "PD", "RUF"
+]
+extend-include = ["*.ipynb"]
+jupyter = true  
+format = { quote-style = "double" }
+lint.ignore-init-module-imports = true
 
 [tool.mypy]
 files = ["src"]
+exclude = ".*\\.ipynb"
 install_types = "True"
 non_interactive = "True"
 disallow_untyped_defs = "True"
@@ -27,6 +34,4 @@ no_implicit_optional = "False"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--color=yes", "-s"]
-markers = [
-    "ci: test that run on ci",
-]
+markers = ["ci: test that run on ci"]

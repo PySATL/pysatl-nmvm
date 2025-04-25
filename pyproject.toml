@@ -12,7 +12,6 @@ select = [
     "NPY", "PD", "RUF"
 ]
 extend-include = ["*.ipynb"]
-jupyter = true  
 format = { quote-style = "double" }
 lint.ignore-init-module-imports = true
 

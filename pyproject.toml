@@ -8,7 +8,7 @@ line-length = 120
 target-version = "py312"
 select = [
     "E", "F", "W", "I",
-    "UP", "C90", "BLK",
+    "UP", "C90",
     "NPY", "PD", "RUF"
 ]
 extend-include = ["*.ipynb"]

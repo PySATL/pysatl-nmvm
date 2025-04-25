@@ -15,7 +15,7 @@ jobs:
         run: |
           pip install -r requirements.txt -r requirements.dev.txt
       - name: "Ruff checks"
-        run: ruff check . --show-source --diff
+        run: ruff check . --output-format=full --diff
       - name: "Format check"
         run: ruff format . --check --diff
       - name: "Mypy"

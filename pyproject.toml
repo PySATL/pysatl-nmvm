@@ -6,14 +6,16 @@ url = "https://github.com/Engelsgeduld/PySATL_NMVM_Module"
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-include = ["*.ipynb"]
+format = { quote-style = "double" }
+
+[tool.ruff.lint]
 select = [
     "E", "F", "W", "I",
     "UP", "C90",
     "NPY", "PD", "RUF"
 ]
-extend-include = ["*.ipynb"]
-format = { quote-style = "double" }
-lint.ignore-init-module-imports = true
+ignore-init-module-imports = true
 
 [tool.mypy]
 files = ["src"]

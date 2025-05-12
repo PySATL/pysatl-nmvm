@@ -5,6 +5,8 @@ import numpy._typing as tpg
 import scipy
 from numba import njit
 
+from src.algorithms.support_algorithms.integrator import IntegrationResult
+
 BITS = 30
 """Number of bits in XOR. Should be less than 64"""
 NUMBA_FAST_MATH = True
@@ -126,7 +128,8 @@ class RQMC:
 
         Returns:Updated mean of all rows
 
-        """
+
+                """
         values = []
         sum_of_new: float = 0.0
         for i in range(self.count):
@@ -212,9 +215,9 @@ class RQMC:
         Returns: XOR float value
 
         """
-        a = int(a * (2**BITS))
-        b = int(b * (2**BITS))
-        return np.bitwise_xor(a, b) / 2**BITS
+        a = int(a * (2 ** BITS))
+        b = int(b * (2 ** BITS))
+        return np.bitwise_xor(a, b) / 2 ** BITS
 
     def __call__(self) -> tuple[float, float]:
         """Interface for users
@@ -223,3 +226,20 @@ class RQMC:
 
         """
         return self.rqmc()
+
+
+class RQMCIntegrator:
+
+    def compute_integral(self, func: Callable, params: dict) -> IntegrationResult:
+        """
+        Compute integral via RQMC integrator
+
+        Args:
+            func: integrated function
+            params: Parameters of integration algorithm
+
+        Returns: moment approximation and error tolerance
+        """
+
+        rqmc = RQMC(func, **params)()
+        return IntegrationResult(rqmc[0], rqmc[1])

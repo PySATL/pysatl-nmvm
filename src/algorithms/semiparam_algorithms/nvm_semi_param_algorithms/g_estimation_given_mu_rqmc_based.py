@@ -7,7 +7,8 @@ from numpy import _typing
 from scipy.integrate import quad_vec
 from scipy.special import gamma
 
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
 from src.estimators.estimate_result import EstimateResult
 
 MU_DEFAULT_VALUE = 1.0
@@ -30,6 +31,7 @@ X_DATA_DEFAULT_VALUE: List[float] = [1.0]
 GRID_SIZE_DEFAULT_VALUE: int = 200
 INTEGRATION_TOLERANCE_DEFAULT_VALUE: float = 1e-2
 INTEGRATION_LIMIT_DEFAULT_VALUE: int = 50
+INTEGRATOR_DEFAULT = RQMCIntegrator()
 
 
 class SemiParametricGEstimationGivenMuRQMCBased:
@@ -69,6 +71,7 @@ class SemiParametricGEstimationGivenMuRQMCBased:
             self.grid_size,
             self.integration_tolerance,
             self.integration_limit,
+            self.integrator
         ) = self._validate_kwargs(self.n, **kwargs)
         self.denominator: float = 2 * math.pi * self.n
         self.precompute_gamma_grid()
@@ -78,7 +81,7 @@ class SemiParametricGEstimationGivenMuRQMCBased:
     @staticmethod
     def _validate_kwargs(
         n: int, **kwargs: Unpack[ParamsAnnotation]
-    ) -> tuple[float, float, float, float, List[float], int, float, int]:
+    ) -> tuple[float, float, float, float, List[float], int, float, int, Integrator]:
         mu: float = kwargs.get("mu", MU_DEFAULT_VALUE)
         gmm: float = kwargs.get("gmm", GAMMA_DEFAULT_VALUE)
         u_value: float = kwargs.get("u_value", U_SEQUENCE_DEFAULT_VALUE(n))
@@ -87,7 +90,8 @@ class SemiParametricGEstimationGivenMuRQMCBased:
         grid_size: int = kwargs.get("grid_size", GRID_SIZE_DEFAULT_VALUE)
         integration_tolerance: float = kwargs.get("integration_tolerance", INTEGRATION_TOLERANCE_DEFAULT_VALUE)
         integration_limit: int = kwargs.get("integration_limit", INTEGRATION_LIMIT_DEFAULT_VALUE)
-        return mu, gmm, u_value, v_value, x_data, grid_size, integration_tolerance, integration_limit
+        integrator: Integrator = kwargs.get("integrator_type", INTEGRATOR_DEFAULT)
+        return mu, gmm, u_value, v_value, x_data, grid_size, integration_tolerance, integration_limit, integrator
 
     def conjugate_psi(self, u: float) -> complex:
         return complex((u**2) / 2, self.mu * u)
@@ -162,15 +166,16 @@ class SemiParametricGEstimationGivenMuRQMCBased:
         x_power = self.x_powers[x][idx]
         return (self.second_u_integrals[idx] * x_power) / gamma_val
 
-    def compute_integrals_for_x(self, x: float) -> float:
+    def compute_integrals_for_x(self, x: float, integrator: Integrator = None) -> float:
         """Compute integrals using RQMC for v-integration."""
-        first_integral = RQMC(lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).rqmc()[0]
+        integrator = integrator or self.integrator
+        first_integral = integrator.compute_integral(func=lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).value
 
-        second_integral = RQMC(lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).rqmc()[0]
+        second_integral = integrator.compute_integral(func=lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).value
 
         total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
     def algorithm(self, sample: np._typing.NDArray) -> EstimateResult:
-        y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
+        y_data = [self.compute_integrals_for_x(x, self.integrator) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

@@ -39,55 +39,63 @@ class NormalVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of  NVM
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
-        Returns: moment approximation and error tolerance
-        """
-        gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
 
-        def integrate_func(u: float) -> float:
+def compute_moment(self, ns: list[int], params: dict) -> list[tuple[float, float]]:
+    gamma = getattr(self.params, 'gamma', 1)
+
+    def make_integrand(n):
+        def func(u):
             return sum(
-                [
-                    binom(n, k)
-                    * (gamma**k)
-                    * (self.params.alpha ** (n - k))
-                    * (self.params.distribution.ppf(u) ** (k / 2))
-                    * norm.moment(k)
-                    for k in range(0, n + 1)
-                ]
+                binom(n, k)
+                * (gamma ** k)
+                * (self.params.alpha ** (n - k))
+                * (self.params.distribution.ppf(u) ** (k / 2))
+                * norm.moment(k)
+                for k in range(n + 1)
             )
 
-        result = RQMC(integrate_func, **params)()
-        return result
+        return func
 
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        parametric_norm = norm(0, self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1)
-        rqmc = RQMC(
-            lambda u: parametric_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u))), **params
-        )
-        return rqmc()
+    return [RQMC(make_integrand(n), **params)() for n in ns]
 
-    @lru_cache()
-    def _integrand_func(self, u: float, d: float, gamma: float) -> float:
-        ppf = self.params.distribution.ppf(u)
-        return (1 / np.sqrt(np.pi * 2 * ppf * np.abs(gamma**2))) * np.exp(-1 * d / (2 * ppf))
 
-    def _log_integrand_func(self, u: float, d: float, gamma: float | int | np.int64) -> float:
-        ppf = self.params.distribution.ppf(u)
-        return -(ppf * np.log(np.pi * 2 * ppf * gamma**2) + d) / (2 * ppf)
+def compute_cdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
+    gamma = getattr(self.params, 'gamma', 1)
+    param_norm = norm(0, gamma)
 
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
-        d = (x - self.params.alpha) ** 2 / gamma**2
-        rqmc = RQMC(lambda u: self._integrand_func(u, d, gamma), **params)
-        return rqmc()
+    def make_cdf_integrand(x):
+        def func(u):
+            return param_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u)))
 
-    def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
-        gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
-        d = (x - self.params.alpha) ** 2 / gamma**2
-        log_rqmc = LogRQMC(lambda u: self._log_integrand_func(u, d, gamma), **params)
-        return log_rqmc()
+        return func
+
+    return [RQMC(make_cdf_integrand(x), **params)() for x in xs]
+
+
+def compute_pdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
+    gamma = getattr(self.params, 'gamma', 1)
+
+    def make_pdf_integrand(d):
+        return lambda u: self._integrand_func(u, d, gamma)
+
+    return [RQMC(make_pdf_integrand((x - self.params.alpha) ** 2 / gamma ** 2), **params)() for x in xs]
+
+
+def compute_logpdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
+    gamma = getattr(self.params, 'gamma', 1)
+
+    def make_log_integrand(d):
+        return lambda u: self._log_integrand_func(u, d, gamma)
+
+    return [LogRQMC(make_log_integrand((x - self.params.alpha) ** 2 / gamma ** 2), **params)() for x in xs]
+
+
+@lru_cache()
+def _integrand_func(self, u: float, d: float, gamma: float) -> float:
+    ppf = self.params.distribution.ppf(u)
+    return (1 / np.sqrt(np.pi * 2 * ppf * np.abs(gamma ** 2))) * np.exp(-d / (2 * ppf))
+
+
+def _log_integrand_func(self, u: float, d: float, gamma: float) -> float:
+    ppf = self.params.distribution.ppf(u)
+    return -(ppf * np.log(np.pi * 2 * ppf * gamma ** 2) + d) / (2 * ppf)

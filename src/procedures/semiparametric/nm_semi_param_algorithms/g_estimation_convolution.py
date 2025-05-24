@@ -93,7 +93,7 @@ class NMSemiParametricGEstimation:
 
             return F_x.real
 
-    def algorithm(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
+    def compute(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
         inv = self.BohmanA(N=self.bohman_n, delta=self.bohman_delta)
         inv.fit(self.characteristic_function_xi)
         x_data_array = np.array(self.x_data, dtype=np.float64)

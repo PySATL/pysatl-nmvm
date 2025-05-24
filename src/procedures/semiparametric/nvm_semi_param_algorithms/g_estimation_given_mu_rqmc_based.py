@@ -7,7 +7,7 @@ from numpy import _typing
 from scipy.integrate import quad_vec
 from scipy.special import gamma
 
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.rqmc import RQMC
 from src.estimators.estimate_result import EstimateResult
 
 MU_DEFAULT_VALUE = 1.0
@@ -171,6 +171,6 @@ class SemiParametricGEstimationGivenMuRQMCBased:
         total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
-    def algorithm(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
         y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

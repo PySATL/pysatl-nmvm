@@ -51,7 +51,7 @@ class SemiParametricMeanSigmaEstimationEmpirical:
             raise ValueError("Expected a positive float as parameter `t`.")
         return t
 
-    def algorithm(self, sample: np.ndarray) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         """Estimate the sigma parameter.
 
         Args:

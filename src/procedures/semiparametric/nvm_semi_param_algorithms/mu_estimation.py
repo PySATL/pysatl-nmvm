@@ -84,7 +84,7 @@ class SemiParametricMuEstimation:
             y += e * self.omega(x)
         return y
 
-    def algorithm(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
         """Root of this function is an estimation of mu
 
         Args:
@@ -96,7 +96,7 @@ class SemiParametricMuEstimation:
         if self.__w(0, sample) == 0:
             return EstimateResult(value=0, success=True)
         if self.__w(0, sample) > 0:
-            second_result = self.algorithm(-1 * sample)
+            second_result = self.compute(-1 * sample)
             return EstimateResult(value=-1 * second_result.value, success=second_result.success)
         if self.__w(self.m, sample) < 0:
             return EstimateResult(value=self.m, success=False)

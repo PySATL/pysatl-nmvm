@@ -179,6 +179,6 @@ class SemiParametricGEstimationGivenMu:
         total = np.sum(first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
-    def algorithm(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
+    def compute(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
         y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

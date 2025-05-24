@@ -7,8 +7,8 @@ from scipy.special import binom
 from scipy.stats import geninvgauss, norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.log_rqmc import LogRQMC
+from src.procedures.support.rqmc import RQMC
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 

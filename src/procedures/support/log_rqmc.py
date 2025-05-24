@@ -4,7 +4,7 @@ import numpy as np
 import numpy._typing as tpg
 import scipy
 
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.rqmc import RQMC
 
 
 class LogRQMC(RQMC):

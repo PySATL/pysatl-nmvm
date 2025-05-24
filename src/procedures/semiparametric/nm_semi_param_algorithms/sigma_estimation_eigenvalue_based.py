@@ -86,7 +86,7 @@ class SemiParametricMeanSigmaEstimationEigenvalueBased:
                 matrix[i, j] = self._alpha(t[i] - t[j], tau)
         return matrix
 
-    def algorithm(self, sample: np.ndarray) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         """Estimate sigma.
 
         Args:

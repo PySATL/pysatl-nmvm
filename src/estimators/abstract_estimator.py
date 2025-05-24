@@ -2,7 +2,7 @@ from typing import Self
 
 from numpy import _typing
 
-from src.algorithms import ALGORITHM_REGISTRY
+from src.procedures import ALGORITHM_REGISTRY
 from src.estimators.estimate_result import EstimateResult
 from src.register.algorithm_purpose import AlgorithmPurpose
 

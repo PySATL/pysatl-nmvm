@@ -80,7 +80,7 @@ class SemiParametricGEstimationPostWidder:
         )
         return result.real
 
-    def algorithm(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
         """Estimate g(x)
 
         Args:

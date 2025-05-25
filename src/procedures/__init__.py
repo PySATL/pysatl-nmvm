@@ -28,19 +28,19 @@ from src.register.register import Registry
 
 ALGORITHM_REGISTRY: Registry = Registry()
 ALGORITHM_REGISTRY.register("mu_estimation", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(SemiParametricMuEstimation)
-ALGORITHM_REGISTRY.register("g_estimation_given_mu", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
+ALGORITHM_REGISTRY.register("density_estim_inv_mellin_quad_int", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     SemiParametricGEstimationGivenMu
 )
-ALGORITHM_REGISTRY.register("g_estimation_convolution", AlgorithmPurpose.NM_SEMIPARAMETRIC)(NMSemiParametricGEstimation)
-ALGORITHM_REGISTRY.register("sigma_estimation_eigenvalue_based", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
+ALGORITHM_REGISTRY.register("density_estim_deconv", AlgorithmPurpose.NM_SEMIPARAMETRIC)(NMSemiParametricGEstimation)
+ALGORITHM_REGISTRY.register("sigma_estimation_eigenvalue", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
     SemiParametricMeanSigmaEstimationEigenvalueBased
 )
-ALGORITHM_REGISTRY.register("sigma_estimation_empirical", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
+ALGORITHM_REGISTRY.register("sigma_estimation_laplace", AlgorithmPurpose.NM_SEMIPARAMETRIC)(
     SemiParametricMeanSigmaEstimationEmpirical
 )
-ALGORITHM_REGISTRY.register("g_estimation_given_mu_rqmc_based", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
+ALGORITHM_REGISTRY.register("density_estim_inv_mellin_rqmc_int", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     SemiParametricGEstimationGivenMuRQMCBased
 )
-ALGORITHM_REGISTRY.register("g_estimation_post_widder", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
+ALGORITHM_REGISTRY.register("density_estim_post_widder", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     SemiParametricGEstimationPostWidder
 )

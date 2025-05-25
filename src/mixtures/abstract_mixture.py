@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import fields
-from typing import Any
+from typing import Any, List, Tuple, Union, Dict
+import numpy as np
+from numpy.typing import NDArray
 
 from scipy.stats import rv_continuous
 from scipy.stats.distributions import rv_frozen
@@ -15,7 +17,6 @@ class AbstractMixtures(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         """
-
         Args:
             mixture_form: Form of Mixture classical or Canonical
             **kwargs: Parameters of Mixture
@@ -28,16 +29,68 @@ class AbstractMixtures(metaclass=ABCMeta):
             raise AssertionError(f"Unknown mixture form: {mixture_form}")
 
     @abstractmethod
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]: ...
+    def _compute_moment(self, n: int, params: Dict) -> Tuple[float, float]:
+        ...
+
+    def compute_moment(
+        self, x: Union[List[int], int, NDArray[np.float64]], params: Dict
+    ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
+        if isinstance(x, np.ndarray):
+            return np.array([self._compute_moment(xp, params) for xp in x], dtype=object)
+        elif isinstance(x, list):
+            return [self._compute_moment(xp, params) for xp in x]
+        elif isinstance(x, int):
+            return self._compute_moment(x, params)
+        else:
+            raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]: ...
+    def _compute_pdf(self, x: float, params: Dict) -> Tuple[float, float]:
+        ...
+
+    def compute_pdf(
+        self, x: Union[List[float], float, NDArray[np.float64]], params: Dict
+    ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
+        if isinstance(x, np.ndarray):
+            return np.array([self._compute_pdf(xp, params) for xp in x], dtype=object)
+        elif isinstance(x, list):
+            return [self._compute_pdf(xp, params) for xp in x]
+        elif isinstance(x, float):
+            return self._compute_pdf(x, params)
+        else:
+            raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]: ...
+    def _compute_logpdf(self, x: float, params: Dict) -> Tuple[float, float]:
+        ...
+
+    def compute_logpdf(
+        self, x: Union[List[float], float, NDArray[np.float64]], params: Dict
+    ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
+        if isinstance(x, np.ndarray):
+            return np.array([self._compute_logpdf(xp, params) for xp in x], dtype=object)
+        elif isinstance(x, list):
+            return [self._compute_logpdf(xp, params) for xp in x]
+        elif isinstance(x, float):
+            return self._compute_logpdf(x, params)
+        else:
+            raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]: ...
+    def _compute_cdf(self, x: float, rqmc_params: Dict[str, Any]) -> Tuple[float, float]:
+        ...
+
+    def compute_cdf(
+        self, x: Union[List[float], float, NDArray[np.float64]], params: Dict
+    ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
+        if isinstance(x, np.ndarray):
+            return np.array([self._compute_cdf(xp, params) for xp in x], dtype=object)
+        elif isinstance(x, list):
+            return [self._compute_cdf(xp, params) for xp in x]
+        elif isinstance(x, float):
+            return self._compute_cdf(x, params)
+        else:
+            raise TypeError(f"Unsupported type for x: {type(x)}")
 
     def _params_validation(self, data_collector: Any, params: dict[str, float | rv_continuous | rv_frozen]) -> Any:
         """Mixture Parameters Validation

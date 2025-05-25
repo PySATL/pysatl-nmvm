@@ -38,154 +38,98 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     _canonical_collector = _NMVMCanonicalDataCollector
 
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
+        self.mixture_form = mixture_form
         super().__init__(mixture_form, **kwargs)
 
-    def _classical_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of classical NMM
-
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
-
-        Returns: moment approximation and error tolerance
-
-        """
-
+    def _compute_moment(self, n: int, params: dict) -> tuple[float, float]:
         def integral_func(u: float) -> float:
             result = 0
             for k in range(0, n + 1):
                 for l in range(0, k + 1):
-                    result += (
-                        binom(n, n - k)
-                        * binom(k, k - l)
-                        * (self.params.beta ** (k - l))
-                        * (self.params.gamma**l)
-                        * self.params.distribution.ppf(u) ** (k - l / 2)
-                        * (self.params.alpha ** (n - k))
-                        * norm.moment(l)
-                    )
+                    if self.mixture_form == "classical":
+                        result += (
+                            binom(n, n - k)
+                            * binom(k, k - l)
+                            * (self.params.beta ** (k - l))
+                            * (self.params.gamma ** l)
+                            * self.params.distribution.ppf(u) ** (k - l / 2)
+                            * (self.params.alpha ** (n - k))
+                            * norm.moment(l)
+                        )
+                    else:
+                        result += (
+                            binom(n, n - k)
+                            * binom(k, k - l)
+                            * (self.params.nu ** (k - l))
+                            * self.params.distribution.ppf(u) ** (k - l / 2)
+                            * (self.params.alpha ** (n - k))
+                            * norm.moment(l)
+                        )
             return result
 
-        rqmc = RQMC(lambda u: integral_func(u), **params)
+        rqmc = RQMC(integral_func)
         return rqmc()
 
-    def _canonical_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of classical NMM
 
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
-
-        Returns: moment approximation and error tolerance
-
-        """
-
-        def integral_func(u: float) -> float:
-            result = 0
-            for k in range(0, n + 1):
-                for l in range(0, k + 1):
-                    result += (
-                        binom(n, n - k)
-                        * binom(k, k - l)
-                        * (self.params.nu ** (k - l))
-                        * self.params.distribution.ppf(u) ** (k - l / 2)
-                        * (self.params.alpha ** (n - k))
-                        * norm.moment(l)
-                    )
-            return result
-
-        rqmc = RQMC(lambda u: integral_func(u), **params)
-        return rqmc()
-
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        if isinstance(self.params, _NMVMClassicDataCollector):
-            return self._classical_moment(n, params)
-        return self._canonical_moment(n, params)
-
-    def _classical_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
-            ppf = lru_cache()(self.params.distribution.ppf)(u)
-            point = (x - self.params.alpha) / (np.sqrt(ppf) * self.params.gamma) - (
-                self.params.beta / self.params.gamma * np.sqrt(ppf)
-            )
-            return norm.cdf(point)
-
-        rqmc = RQMC(lambda u: _inner_func(u), **params)
-        return rqmc()
-
-    def _canonical_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
+    def _compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
+        def inner_func(u: float) -> float:
             ppf = self.params.distribution.ppf(u)
-            point = (x - self.params.alpha) / (np.sqrt(ppf)) - (self.params.mu * np.sqrt(ppf))
-            return norm.cdf(point)
-
-        rqmc = RQMC(lambda u: _inner_func(u), **params)
-        return rqmc()
-
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        if isinstance(self.params, _NMVMClassicDataCollector):
-            return self._classical_cdf(x, params)
-        return self._canonical_cdf(x, params)
-
-    def _classical_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
-            ppf = self.params.distribution.ppf(u)
-            return (
-                1
-                / np.sqrt(2 * np.pi * ppf * self.params.gamma**2)
-                * np.exp(
-                    -((x - self.params.alpha) ** 2 + self.params.beta**2 * ppf**2) / (2 * ppf * self.params.gamma**2)
+            if self.mixture_form == "classical":
+                point = (x - self.params.alpha) / (np.sqrt(ppf) * self.params.gamma) - (
+                    self.params.beta / self.params.gamma * np.sqrt(ppf)
                 )
-            )
+            else:
+                point = (x - self.params.alpha) / (np.sqrt(ppf)) - (self.params.mu * np.sqrt(ppf))
+            return norm.cdf(point)
 
-        rqmc = RQMC(lambda u: _inner_func(u), **params)()
-        return np.exp(self.params.beta * (x - self.params.alpha) / self.params.gamma**2) * rqmc[0], rqmc[1]
-
-    def _canonical_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
-            ppf = self.params.distribution.ppf(u)
-            return (
-                1
-                / np.sqrt(2 * np.pi * ppf)
-                * np.exp(-((x - self.params.alpha) ** 2 + self.params.mu**2 * ppf**2) / (2 * ppf))
-            )
-
-        rqmc = RQMC(lambda u: _inner_func(u), **params)
-        res = rqmc()
-        return np.exp(self.params.mu * (x - self.params.alpha)) * res[0], res[1]
-
-    def _classical_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
-            ppf = self.params.distribution.ppf(u)
-            return -(
-                (x - self.params.alpha) ** 2
-                + ppf**2 * self.params.beta**2
-                + ppf * self.params.gamma**2 * np.log(2 * np.pi * ppf * self.params.gamma**2)
-            ) / (2 * ppf * self.params.gamma**2)
-
-        rqmc = LogRQMC(lambda u: _inner_func(u), **params)
+        rqmc = RQMC(inner_func)
         return rqmc()
 
-    def _canonical_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        def _inner_func(u: float) -> float:
+
+    def _compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
+        def inner_func(u: float) -> float:
             ppf = self.params.distribution.ppf(u)
-            return -((x - self.params.alpha) ** 2 + ppf**2 * self.params.mu**2 + ppf * np.log(2 * np.pi * ppf)) / (
-                2 * ppf
-            )
+            if self.mixture_form == "classical":
+                return (
+                    1
+                    / np.sqrt(2 * np.pi * ppf * self.params.gamma ** 2)
+                    * np.exp(
+                        -((x - self.params.alpha) ** 2 + self.params.beta ** 2 * ppf ** 2)
+                        / (2 * ppf * self.params.gamma ** 2)
+                    )
+                )
+            else:
+                return (
+                    1
+                    / np.sqrt(2 * np.pi * ppf)
+                    * np.exp(-((x - self.params.alpha) ** 2 + self.params.mu ** 2 * ppf ** 2) / (2 * ppf))
+                )
 
-        rqmc = LogRQMC(lambda u: _inner_func(u), **params)
-        return rqmc()
+        rqmc_res = RQMC(inner_func)()
+        if self.mixture_form == "classical":
+            val = np.exp(self.params.beta * (x - self.params.alpha) / self.params.gamma ** 2) * rqmc_res[0]
+        else:
+            val = np.exp(self.params.mu * (x - self.params.alpha)) * rqmc_res[0]
 
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        if isinstance(self.params, _NMVMClassicDataCollector):
-            return self._classical_pdf(x, params)
-        return self._canonical_pdf(x, params)
+        return val, rqmc_res[1]
 
-    def compute_logpdf(self, x: float, params: dict) -> tuple[Any, float]:
-        if isinstance(self.params, _NMVMClassicDataCollector):
-            int_result = self._classical_log_pdf(x, params)
-            return self.params.beta * (x - self.params.alpha) / self.params.gamma**2 + int_result[0], int_result[1]
-        int_result = self._canonical_log_pdf(x, params)
-        return self.params.mu * (x - self.params.alpha) + int_result[0], int_result[1]
+
+    def _compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
+        def inner_func(u: float) -> float:
+            ppf = self.params.distribution.ppf(u)
+            if self.mixture_form == "classical":
+                return -(
+                    (x - self.params.alpha) ** 2
+                    + ppf ** 2 * self.params.beta ** 2
+                    + ppf * self.params.gamma ** 2 * np.log(2 * np.pi * ppf * self.params.gamma ** 2)
+                ) / (2 * ppf * self.params.gamma ** 2)
+            else:
+                return -((x - self.params.alpha) ** 2 + ppf ** 2 * self.params.mu ** 2 + ppf * np.log(2 * np.pi * ppf)) / (2 * ppf)
+
+        rqmc_res = LogRQMC(inner_func)()
+        if self.mixture_form == "classical":
+            val = self.params.beta * (x - self.params.alpha) / self.params.gamma ** 2 + rqmc_res[0]
+        else:
+            val = self.params.mu * (x - self.params.alpha) + rqmc_res[0]
+
+        return val, rqmc_res[1]

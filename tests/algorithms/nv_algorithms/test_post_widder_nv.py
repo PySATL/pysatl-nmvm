@@ -21,7 +21,7 @@ class TestPostWidderNV:
         x_data = np.linspace(0.5, 10.0, 30)
 
         estimator = NVSemiParametricEstimator(
-            "g_estimation_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
+            "density_estim_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
         )
         est = estimator.estimate(sample)
         est_data = est.list_value
@@ -44,7 +44,7 @@ class TestPostWidderNV:
         x_data = np.linspace(0.5, 10.0, 30)
 
         estimator = NVSemiParametricEstimator(
-            "g_estimation_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
+            "density_estim_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
         )
         est = estimator.estimate(sample)
         est_data = est.list_value

@@ -19,7 +19,7 @@ class TestSemiParametricMixingDensityEstimationGivenMu:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=given_mu, distribution=expon)
         sample = NMVGenerator().canonical_generate(mixture, n)
         estimator = NMVSemiParametricEstimator(
-            "g_estimation_given_mu", {"x_data": x_data, "u_value": 7.6, "v_value": 0.9}
+            "density_estim_inv_mellin_quad_int", {"x_data": x_data, "u_value": 7.6, "v_value": 0.9}
         )
         est = estimator.estimate(sample)
         error = 0.0

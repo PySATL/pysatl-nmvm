@@ -29,7 +29,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
         )
 
         estimator = NMSemiParametricEstimator(
-            "sigma_estimation_eigenvalue_based", {"k": k, "l": l, "eps": eps, "search_area": search_area}
+            "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
         print(est.value)
@@ -55,7 +55,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
         )
 
         estimator = NMSemiParametricEstimator(
-            "sigma_estimation_eigenvalue_based", {"k": k, "l": l, "eps": eps, "search_area": search_area}
+            "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
         print(est.value)
@@ -81,7 +81,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
         )
 
         estimator = NMSemiParametricEstimator(
-            "sigma_estimation_eigenvalue_based", {"k": k, "l": l, "eps": eps, "search_area": search_area}
+            "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
         print(est.value)
@@ -107,7 +107,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
         )
 
         estimator = NMSemiParametricEstimator(
-            "sigma_estimation_eigenvalue_based", {"k": k, "l": l, "eps": eps, "search_area": search_area}
+            "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
         print(est.value)
@@ -132,7 +132,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
         )
 
         estimator = NMSemiParametricEstimator(
-            "sigma_estimation_eigenvalue_based", {"k": k, "l": l, "eps": eps, "search_area": search_area}
+            "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
         print(est.value)

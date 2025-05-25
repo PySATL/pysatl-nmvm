@@ -32,19 +32,16 @@ class _NVMCanonicalDataCollector:
 
 
 class NormalVarianceMixtures(AbstractMixtures):
-
     _classical_collector = _NVMClassicDataCollector
     _canonical_collector = _NVMCanonicalDataCollector
 
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
+    def compute_moment(self, n: int, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+        gamma = getattr(self.params, 'gamma', 1)
 
-def compute_moment(self, ns: list[int], params: dict) -> list[tuple[float, float]]:
-    gamma = getattr(self.params, 'gamma', 1)
-
-    def make_integrand(n):
-        def func(u):
+        def integrand(u: float) -> float:
             return sum(
                 binom(n, k)
                 * (gamma ** k)
@@ -54,48 +51,52 @@ def compute_moment(self, ns: list[int], params: dict) -> list[tuple[float, float
                 for k in range(n + 1)
             )
 
-        return func
+        return RQMC(integrand, **rqmc_params)()
 
-    return [RQMC(make_integrand(n), **params)() for n in ns]
+    def compute_moments(self, ns: list[int], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
+        return [self.compute_moment(n, rqmc_params) for n in ns]
 
+    def compute_cdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+        gamma = getattr(self.params, 'gamma', 1)
+        param_norm = norm(0, gamma)
 
-def compute_cdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-    gamma = getattr(self.params, 'gamma', 1)
-    param_norm = norm(0, gamma)
-
-    def make_cdf_integrand(x):
-        def func(u):
+        def integrand(u: float) -> float:
             return param_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u)))
 
-        return func
+        return RQMC(integrand, **rqmc_params)()
 
-    return [RQMC(make_cdf_integrand(x), **params)() for x in xs]
+    def compute_cdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
+        return [self.compute_cdf(x, rqmc_params) for x in xs]
 
+    def compute_pdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+        gamma = getattr(self.params, 'gamma', 1)
+        d = (x - self.params.alpha) ** 2 / gamma ** 2
 
-def compute_pdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-    gamma = getattr(self.params, 'gamma', 1)
+        def integrand(u: float) -> float:
+            return self._integrand_func(u, d, gamma)
 
-    def make_pdf_integrand(d):
-        return lambda u: self._integrand_func(u, d, gamma)
+        return RQMC(integrand, **rqmc_params)()
 
-    return [RQMC(make_pdf_integrand((x - self.params.alpha) ** 2 / gamma ** 2), **params)() for x in xs]
+    def compute_pdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
+        return [self.compute_pdf(x, rqmc_params) for x in xs]
 
+    def compute_logpdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+        gamma = getattr(self.params, 'gamma', 1)
+        d = (x - self.params.alpha) ** 2 / gamma ** 2
 
-def compute_logpdf(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-    gamma = getattr(self.params, 'gamma', 1)
+        def integrand(u: float) -> float:
+            return self._log_integrand_func(u, d, gamma)
 
-    def make_log_integrand(d):
-        return lambda u: self._log_integrand_func(u, d, gamma)
+        return LogRQMC(integrand, **rqmc_params)()
 
-    return [LogRQMC(make_log_integrand((x - self.params.alpha) ** 2 / gamma ** 2), **params)() for x in xs]
+    def compute_logpdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
+        return [self.compute_logpdf(x, rqmc_params) for x in xs]
 
+    @lru_cache()
+    def _integrand_func(self, u: float, d: float, gamma: float) -> float:
+        ppf = self.params.distribution.ppf(u)
+        return (1 / np.sqrt(np.pi * 2 * ppf * np.abs(gamma ** 2))) * np.exp(-d / (2 * ppf))
 
-@lru_cache()
-def _integrand_func(self, u: float, d: float, gamma: float) -> float:
-    ppf = self.params.distribution.ppf(u)
-    return (1 / np.sqrt(np.pi * 2 * ppf * np.abs(gamma ** 2))) * np.exp(-d / (2 * ppf))
-
-
-def _log_integrand_func(self, u: float, d: float, gamma: float) -> float:
-    ppf = self.params.distribution.ppf(u)
-    return -(ppf * np.log(np.pi * 2 * ppf * gamma ** 2) + d) / (2 * ppf)
+    def _log_integrand_func(self, u: float, d: float, gamma: float) -> float:
+        ppf = self.params.distribution.ppf(u)
+        return -(ppf * np.log(np.pi * 2 * ppf * gamma ** 2) + d) / (2 * ppf)

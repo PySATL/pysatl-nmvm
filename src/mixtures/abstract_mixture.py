@@ -62,6 +62,4 @@ class AbstractMixtures(metaclass=ABCMeta):
         for pair in params.items():
             if pair[0] not in names_and_types:
                 raise ValueError(f"Unexpected parameter {pair[0]}")
-            if not isinstance(pair[1], names_and_types[pair[0]]):
-                raise ValueError(f"Type missmatch: {pair[0]} should be {names_and_types[pair[0]]}, not {type(pair[1])}")
         return data_collector(**params)

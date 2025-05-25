@@ -9,7 +9,7 @@ T_DEFAULT_VALUE = 7.5
 PARAMETER_KEYS = ["t"]
 
 
-class SemiParametricMeanSigmaEstimationEmpirical:
+class NMEstimationSigmaLaplace:
     """Estimation of sigma parameter of NM mixture represented in canonical form Y = xi + sigma*N.
 
     Args:

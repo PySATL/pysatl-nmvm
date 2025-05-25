@@ -14,7 +14,7 @@ SEARCH_DENSITY_DEFAULT_VALUE = 1000
 PARAMETER_KEYS = ["l", "k", "eps", "search_area", "search_density"]
 
 
-class SemiParametricMeanSigmaEstimationEigenvalueBased:
+class NMEstimationSigmaEigenvals:
     """Estimation of sigma parameter of NM mixture represented in canonical form Y = xi + sigma*N.
 
     Args:

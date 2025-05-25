@@ -12,7 +12,7 @@ BOHMAN_DELTA_DEFAULT_VALUE: float = 0.0001
 X_DATA_DEFAULT_VALUE: List[float] = [1.0]
 
 
-class NMSemiParametricGEstimation:
+class NMEstimationDensityInvMT:
     """Estimation of mixing density function g (xi density function) of NM mixture
     represented in canonical form Y = xi + sigma*N.
 

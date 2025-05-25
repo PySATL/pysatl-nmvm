@@ -14,7 +14,7 @@ MAX_ITERATIONS_DEFAULT_VALUE = 10**9
 PARAMETER_KEYS = ["m", "tolerance", "omega", "max_iterations"]
 
 
-class SemiParametricMuEstimation:
+class NMVEstimationMu:
     """Estimation of mu parameter of NVM mixture represented in canonical form Y = alpha + mu*xi + sqrt(xi)*N,
     where alpha = 0
 

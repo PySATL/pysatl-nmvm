@@ -30,7 +30,7 @@ INTEGRATION_TOLERANCE_DEFAULT_VALUE: float = 1e-2
 INTEGRATION_LIMIT_DEFAULT_VALUE: int = 50
 
 
-class SemiParametricNVEstimation:
+class NVEstimationDensityInvMT:
     """Estimation of mixing density function g (xi density function) of NV mixture represented in canonical form Y =
     alpha + sqrt(xi)*N, where alpha = 0 and mu = 0.
 

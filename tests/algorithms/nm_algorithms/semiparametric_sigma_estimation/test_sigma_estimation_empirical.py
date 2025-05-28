@@ -3,7 +3,7 @@ import math
 import pytest
 from scipy.stats import expon, uniform
 
-from src.estimators.semiparametric.nm_semiparametric_estimator import NMSemiParametricEstimator
+from src.estimators.semiparametric.nm_semiparametric_estimator import NMSemiparEstim
 from src.generators.nm_generator import NMGenerator
 from src.mixtures.nm_mixture import NormalMeanMixtures
 
@@ -20,7 +20,7 @@ class TestSemiParametricSigmaEstimationEmpirical:
         answer_list = []
         for alpha in [round(x, 5) for x in [i * 0.0001 for i in range(1, 10000)]]:
             t = math.sqrt(alpha * math.log(sample_len)) / (2 * search_area)
-            estimator = NMSemiParametricEstimator("sigma_estimation_laplace", {"t": t})
+            estimator = NMSemiparEstim("sigma_estimation_laplace", {"t": t})
             est = estimator.estimate(sample)
             left = (est.value**2 - real_sigma**2) ** 0.5
             right = (
@@ -39,7 +39,7 @@ class TestSemiParametricSigmaEstimationEmpirical:
         M = 10
         for alpha in [round(x, 4) for x in [i * 0.0001 for i in range(1, 10000)]]:
             t = math.sqrt(alpha * math.log(sample_len)) / (2 * search_area)
-            estimator = NMSemiParametricEstimator("sigma_estimation_laplace", {"t": t})
+            estimator = NMSemiparEstim("sigma_estimation_laplace", {"t": t})
             est = estimator.estimate(sample)
             left = abs(est.value**2 - real_sigma**2) ** 0.5
             right = 4 * M * search_area / math.sqrt(alpha * math.log(sample_len))

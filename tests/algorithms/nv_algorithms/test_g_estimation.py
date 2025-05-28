@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.stats import expon
 
-from src.estimators.semiparametric.nv_semiparametric_estimator import NVSemiParametricEstimator
+from src.estimators.semiparametric.nv_semiparametric_estimator import NVSemiparEstim
 from src.generators.nv_generator import NVGenerator
 from src.mixtures.nv_mixture import NormalVarianceMixtures
 
@@ -17,7 +17,7 @@ class TestSemiParametricMixingDensityEstimationNV:
         n = 100
         mixture = NormalVarianceMixtures("canonical", alpha=0, distribution=expon)
         sample = NVGenerator().canonical_generate(mixture, n)
-        estimator = NVSemiParametricEstimator(
+        estimator = NVSemiparEstim(
             "density_estim_inv_mellin_quad_int", {"x_data": x_data, "u_value": 7.6, "v_value": 0.9}
         )
         est = estimator.estimate(sample)

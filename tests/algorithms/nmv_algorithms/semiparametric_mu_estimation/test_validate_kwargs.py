@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
+from src.procedures.semiparametric.nvm_semi_param_algorithms.mu_estimation import NMVEstimationMu
 
 
 def _test_omega(x: float) -> float:
@@ -18,7 +18,7 @@ class TestValidateKwargs:
     )
     def test_set_default_params_len_1_value_error_m(self, params: dict) -> None:
         with pytest.raises(ValueError, match="Expected positive integer as parameter m"):
-            SemiParametricMuEstimation()._validate_kwargs(**params)
+            NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -26,12 +26,12 @@ class TestValidateKwargs:
     )
     def test_set_default_params_len_1_value_error_tolerance(self, params: dict) -> None:
         with pytest.raises(ValueError, match="Expected positive float as parameter tolerance"):
-            SemiParametricMuEstimation()._validate_kwargs(**params)
+            NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize("params", [{"omega": 1}, {"omega": []}, {"omega": "str"}, {"omega": ()}])
     def test_set_default_params_len_3_value_error_omega(self, params: dict) -> None:
         with pytest.raises(ValueError, match="Expected callable object as parameter omega"):
-            SemiParametricMuEstimation()._validate_kwargs(**params)
+            NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -47,7 +47,7 @@ class TestValidateKwargs:
     )
     def test_set_default_params_len_1_value_error_max_iterations(self, params: dict) -> None:
         with pytest.raises(ValueError, match="Expected positive integer as parameter max_iterations"):
-            SemiParametricMuEstimation()._validate_kwargs(**params)
+            NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -62,7 +62,7 @@ class TestValidateKwargs:
     )
     def test_set_default_params_len_2_value_error_m(self, params: dict) -> None:
         with pytest.raises(ValueError, match="Expected positive integer as parameter m"):
-            SemiParametricMuEstimation()._validate_kwargs(**params)
+            NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -73,7 +73,7 @@ class TestValidateKwargs:
         ],
     )
     def test_set_default_params_len_3_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation()._validate_kwargs(**params)
+        NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -84,17 +84,17 @@ class TestValidateKwargs:
         ],
     )
     def test_set_default_params_len_4_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation()._validate_kwargs(**params)
+        NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params", [{"m": 100, "tolerance": 1 / 10}, {"m": 1000, "tolerance": 10**-9}, {"m": 1, "tolerance": 1}]
     )
     def test_set_default_params_len_2_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation()._validate_kwargs(**params)
+        NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize("params", [{"m": 100}, {"m": 1000}, {"m": 1}])
     def test_set_default_params_len_1_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation()._validate_kwargs(**params)
+        NMVEstimationMu()._validate_kwargs(**params)
 
     @pytest.mark.parametrize(
         "params",
@@ -105,14 +105,14 @@ class TestValidateKwargs:
         ],
     )
     def test_init_set_default_params_len_3_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation(np.array([1]), **params)
+        NMVEstimationMu(np.array([1]), **params)
 
     @pytest.mark.parametrize(
         "params", [{"m": 100, "tolerance": 1 / 10}, {"m": 1000, "tolerance": 10**-9}, {"m": 1, "tolerance": 1}]
     )
     def test_init_set_default_params_len_2_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation(np.array([1]), **params)
+        NMVEstimationMu(np.array([1]), **params)
 
     @pytest.mark.parametrize("params", [{"m": 100}, {"m": 1000}, {"m": 1}])
     def test_init_set_default_params_len_1_correct(self, params: dict) -> None:
-        SemiParametricMuEstimation(np.array([1]), **params)
+        NMVEstimationMu(np.array([1]), **params)

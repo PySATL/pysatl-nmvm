@@ -3,7 +3,7 @@ from typing import Callable
 import numpy as np
 import pytest
 
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.rqmc import RQMC
 
 
 def loss_func(true_func: Callable, rqms: Callable, count: int):

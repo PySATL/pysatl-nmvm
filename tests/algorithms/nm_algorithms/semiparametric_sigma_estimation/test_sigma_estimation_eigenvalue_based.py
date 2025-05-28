@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.stats import expon, uniform
 
-from src.estimators.semiparametric.nm_semiparametric_estimator import NMSemiParametricEstimator
+from src.estimators.semiparametric.nm_semiparametric_estimator import NMSemiparEstim
 from src.generators.nm_generator import NMGenerator
 from src.mixtures.nm_mixture import NormalMeanMixtures
 
@@ -28,7 +28,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
             * (np.log(np.log(sample_len))) ** 0.6
         )
 
-        estimator = NMSemiParametricEstimator(
+        estimator = NMSemiparEstim(
             "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
@@ -54,7 +54,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
             * (np.log(np.log(sample_len))) ** 0.6
         )
 
-        estimator = NMSemiParametricEstimator(
+        estimator = NMSemiparEstim(
             "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
@@ -80,7 +80,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
             * (np.log(np.log(sample_len))) ** 0.6
         )
 
-        estimator = NMSemiParametricEstimator(
+        estimator = NMSemiparEstim(
             "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
@@ -106,7 +106,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
             * (np.log(np.log(sample_len))) ** 0.6
         )
 
-        estimator = NMSemiParametricEstimator(
+        estimator = NMSemiparEstim(
             "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)
@@ -131,7 +131,7 @@ class TestSemiParametricSigmaEstimationEigenvalueBased:
             * (np.log(np.log(sample_len))) ** 0.6
         )
 
-        estimator = NMSemiParametricEstimator(
+        estimator = NMSemiparEstim(
             "sigma_estimation_eigenvalue", {"k": k, "l": l, "eps": eps, "search_area": search_area}
         )
         est = estimator.estimate(sample)

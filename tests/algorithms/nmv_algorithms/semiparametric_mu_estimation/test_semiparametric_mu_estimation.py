@@ -3,7 +3,7 @@ import math
 import pytest
 from scipy.stats import expon, gamma, halfnorm, pareto
 
-from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiParametricEstimator
+from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiparEstim
 from src.generators.nmv_generator import NMVGenerator
 from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
@@ -15,7 +15,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_expon_no_parameters(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -23,7 +23,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_expon_no_parameters_small(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -31,7 +31,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_pareto_no_parameters(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=pareto(2.62))
         sample = self.generator.canonical_generate(mixture, 50000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -39,7 +39,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_pareto_no_parameters_small(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=pareto(2.62))
         sample = self.generator.canonical_generate(mixture, 50000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -47,7 +47,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_halfnorm_no_parameters(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=halfnorm)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -55,7 +55,7 @@ class TestSemiParametricMuEstimation:
     def test_mu_estimation_gamma_no_parameters(self, real_mu: float) -> None:
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=gamma(2))
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation")
+        estimator = NMVSemiparEstim("mu_estimation")
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -64,7 +64,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -73,7 +73,7 @@ class TestSemiParametricMuEstimation:
         real_mu = -1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -84,7 +84,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -93,7 +93,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 10
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(est.value == params["m"]) and est.success is False
 
@@ -104,7 +104,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -115,7 +115,7 @@ class TestSemiParametricMuEstimation:
         real_mu = -1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -132,7 +132,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -149,7 +149,7 @@ class TestSemiParametricMuEstimation:
         real_mu = -1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -168,7 +168,7 @@ class TestSemiParametricMuEstimation:
         real_mu = 1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True
 
@@ -187,6 +187,6 @@ class TestSemiParametricMuEstimation:
         real_mu = -1
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=real_mu, distribution=expon)
         sample = self.generator.canonical_generate(mixture, 10000)
-        estimator = NMVSemiParametricEstimator("mu_estimation", params)
+        estimator = NMVSemiparEstim("mu_estimation", params)
         est = estimator.estimate(sample)
         assert abs(real_mu - est.value) < 1 and est.success is True

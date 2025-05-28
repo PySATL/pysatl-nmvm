@@ -3,7 +3,7 @@ import math
 import pytest
 from scipy.stats import expon, gamma
 
-from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiParametricEstimator
+from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiparEstim
 from src.generators.nmv_generator import NMVGenerator
 from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
@@ -18,7 +18,7 @@ class TestSemiParametricMixingDensityEstimationGivenMu:
 
         mixture = NormalMeanVarianceMixtures("canonical", alpha=0, mu=given_mu, distribution=expon)
         sample = NMVGenerator().canonical_generate(mixture, n)
-        estimator = NMVSemiParametricEstimator(
+        estimator = NMVSemiparEstim(
             "density_estim_inv_mellin_quad_int", {"x_data": x_data, "u_value": 7.6, "v_value": 0.9}
         )
         est = estimator.estimate(sample)

@@ -3,7 +3,7 @@ import pytest
 from mpmath import ln
 from scipy.stats import expon, gamma
 
-from src.estimators.semiparametric.nv_semiparametric_estimator import NVSemiParametricEstimator
+from src.estimators.semiparametric.nv_semiparametric_estimator import NVSemiparEstim
 from src.generators.nv_generator import NVGenerator
 from src.mixtures.nv_mixture import NormalVarianceMixtures
 
@@ -20,7 +20,7 @@ class TestPostWidderNV:
         sample = NVGenerator().classical_generate(mixture, sample_size)
         x_data = np.linspace(0.5, 10.0, 30)
 
-        estimator = NVSemiParametricEstimator(
+        estimator = NVSemiparEstim(
             "density_estim_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
         )
         est = estimator.estimate(sample)
@@ -43,7 +43,7 @@ class TestPostWidderNV:
         sample = NVGenerator().classical_generate(mixture, sample_size)
         x_data = np.linspace(0.5, 10.0, 30)
 
-        estimator = NVSemiParametricEstimator(
+        estimator = NVSemiparEstim(
             "density_estim_post_widder", {"x_data": x_data, "sigma": sigma, "n": degree}
         )
         est = estimator.estimate(sample)

@@ -84,7 +84,7 @@ class NMVEstimationMu:
             y += e * self.omega(x)
         return y
 
-    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         """Root of this function is an estimation of mu
 
         Args:

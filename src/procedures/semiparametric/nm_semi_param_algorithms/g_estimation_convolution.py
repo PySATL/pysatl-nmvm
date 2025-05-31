@@ -11,7 +11,6 @@ BOHMAN_N_DEFAULT_VALUE: int = 10000
 BOHMAN_DELTA_DEFAULT_VALUE: float = 0.0001
 X_DATA_DEFAULT_VALUE: List[float] = [1.0]
 
-
 class NMEstimationDensityInvMT:
     """Estimation of mixing density function g (xi density function) of NM mixture
     represented in canonical form Y = xi + sigma*N.
@@ -34,8 +33,8 @@ class NMEstimationDensityInvMT:
         bohman_n: int
         bohman_delta: float
 
-    def __init__(self, sample: Optional[_typing.NDArray[np.float64]] = None, **kwargs: Unpack[ParamsAnnotation]):
-        self.sample: _typing.NDArray[np.float64] = np.array([]) if sample is None else sample
+    def __init__(self, sample: Optional[np.ndarray] = None, **kwargs: Unpack[ParamsAnnotation]):
+        self.sample: np.ndarray = np.array([]) if sample is None else sample
         self.n: int = len(self.sample)
         (
             self.x_data,
@@ -93,7 +92,7 @@ class NMEstimationDensityInvMT:
 
             return F_x.real
 
-    def compute(self, sample: _typing.NDArray[np.float64]) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         inv = self.BohmanA(N=self.bohman_n, delta=self.bohman_delta)
         inv.fit(self.characteristic_function_xi)
         x_data_array = np.array(self.x_data, dtype=np.float64)

@@ -77,7 +77,7 @@ class NMVEstimationDensityPW:
         )
         return result.real
 
-    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         """Estimate g(x)
 
         Args:

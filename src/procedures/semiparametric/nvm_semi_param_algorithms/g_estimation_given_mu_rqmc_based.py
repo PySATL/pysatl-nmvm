@@ -52,13 +52,13 @@ class NMVEstimationDensityInvMTquadRQMCBased:
         integration_tolerance: float
         integration_limit: int
 
-    def __init__(self, sample: Optional[_typing.NDArray[np.float64]] = None, **kwargs: Unpack[ParamsAnnotation]):
+    def __init__(self, sample: Optional[np.ndarray] = None, **kwargs: Unpack[ParamsAnnotation]):
         self.x_powers: Dict[float, np.ndarray] = {}
         self.second_u_integrals: np.ndarray
         self.first_u_integrals: np.ndarray
         self.gamma_grid: np.ndarray
         self.v_grid: np.ndarray
-        self.sample: _typing.NDArray[np.float64] = np.array([]) if sample is None else sample
+        self.sample: np.ndarray = np.array([]) if sample is None else sample
         self.n: int = len(self.sample)
         (
             self.mu,
@@ -171,6 +171,6 @@ class NMVEstimationDensityInvMTquadRQMCBased:
         total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
-    def compute(self, sample: np._typing.NDArray) -> EstimateResult:
+    def compute(self, sample: np.ndarray) -> EstimateResult:
         y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

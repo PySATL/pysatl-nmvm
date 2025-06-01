@@ -13,5 +13,8 @@ class Integrator(Protocol):
 
     """Base class for integral calculation"""
 
-    def compute_integral(self, func: Callable, params: dict) -> IntegrationResult:
+    def __init__(self) -> None:
+        ...
+
+    def compute(self, func: Callable) -> IntegrationResult:
         ...

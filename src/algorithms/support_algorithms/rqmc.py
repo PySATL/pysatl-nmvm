@@ -229,17 +229,48 @@ class RQMC:
 
 
 class RQMCIntegrator:
+    """
+    Randomize Quasi Monte Carlo Method
 
-    def compute_integral(self, func: Callable, params: dict) -> IntegrationResult:
+    Args:
+        error_tolerance: pre-specified error tolerance
+        count: number of rows of random values matrix
+        base_n: number of columns of random values matrix
+        i_max: allowed number of cycles
+        a: parameter for quantile of normal distribution
+
+    """
+
+    def __init__(
+            self,
+            error_tolerance: float = 1e-6,
+            count: int = 25,
+            base_n: int = 2 ** 6,
+            i_max: int = 100,
+            a: float = 0.00047,
+    ):
+        self.error_tolerance = error_tolerance
+        self.count = count
+        self.base_n = base_n
+        self.i_max = i_max
+        self.a = a
+
+    def compute(self, func: Callable) -> IntegrationResult:
         """
         Compute integral via RQMC integrator
 
         Args:
             func: integrated function
-            params: Parameters of integration algorithm
 
         Returns: moment approximation and error tolerance
         """
+        result = RQMC(
+            func,
+            error_tolerance=self.error_tolerance,
+            count=self.count,
+            base_n=self.base_n,
+            i_max=self.i_max,
+            a=self.a,
+        )()
+        return IntegrationResult(result[0], result[1])
 
-        rqmc = RQMC(func, **params)()
-        return IntegrationResult(rqmc[0], rqmc[1])

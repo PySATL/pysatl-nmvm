@@ -5,6 +5,7 @@ from typing import Any
 from scipy.stats import rv_continuous
 from scipy.stats.distributions import rv_frozen
 
+from src.algorithms.support_algorithms.integrator import Integrator
 
 class AbstractMixtures(metaclass=ABCMeta):
     """Base class for Mixtures"""
@@ -28,13 +29,13 @@ class AbstractMixtures(metaclass=ABCMeta):
             raise AssertionError(f"Unknown mixture form: {mixture_form}")
 
     @abstractmethod
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]: ...
+    def compute_moment(self, n: int, integrator: Integrator) -> tuple[float, float]: ...
 
     @abstractmethod
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]: ...
+    def compute_cdf(self, x: float, integrator: Integrator) -> tuple[float, float]: ...
 
     @abstractmethod
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]: ...
+    def compute_pdf(self, x: float, integrator: Integrator) -> tuple[float, float]: ...
 
     @abstractmethod
     def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]: ...

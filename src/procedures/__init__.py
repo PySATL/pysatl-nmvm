@@ -1,28 +1,28 @@
-from src.procedures.semiparametric.nm_semi_param_algorithms.g_estimation_convolution import (
+from src.procedures.semiparametric.nm_semiparametric.g_estimation_convolution import (
     NMEstimationDensityInvMT,
 )
-from src.procedures.semiparametric.nm_semi_param_algorithms.sigma_estimation_eigenvalue_based import (
+from src.procedures.semiparametric.nm_semiparametric.sigma_estimation_eigenvalue_based import (
     NMEstimationSigmaEigenvals,
 )
-from src.procedures.semiparametric.nm_semi_param_algorithms.sigma_estimation_empirical import (
+from src.procedures.semiparametric.nm_semiparametric.sigma_estimation_empirical import (
     NMEstimationSigmaLaplace,
 )
-from src.procedures.semiparametric.nv_semi_param_algorithms.g_estimation_given_mu import (
+from src.procedures.semiparametric.nv_semiparametric.g_estimation_given_mu import (
     NVEstimationDensityInvMT,
 )
-from src.procedures.semiparametric.nv_semi_param_algorithms.g_estimation_post_widder import (
+from src.procedures.semiparametric.nv_semiparametric.g_estimation_post_widder import (
     NMVEstimationDensityPW,
 )
-from src.procedures.semiparametric.nvm_semi_param_algorithms.g_estimation_given_mu import (
+from src.procedures.semiparametric.nvm_semiparametric.g_estimation_given_mu import (
     NMVEstimationDensityInvMTquad,
 )
-from src.procedures.semiparametric.nvm_semi_param_algorithms.g_estimation_given_mu_rqmc_based import (
+from src.procedures.semiparametric.nvm_semiparametric.g_estimation_given_mu_rqmc_based import (
     NMVEstimationDensityInvMTquadRQMCBased,
 )
-from src.procedures.semiparametric.nvm_semi_param_algorithms.g_estimation_post_widder import (
-    SemiParametricGEstimationPostWidder,
+from src.procedures.semiparametric.nvm_semiparametric.g_estimation_post_widder import (
+    NMVEstimationDensityPW,
 )
-from src.procedures.semiparametric.nvm_semi_param_algorithms.mu_estimation import (NMVEstimationMu)
+from src.procedures.semiparametric.nvm_semiparametric.mu_estimation import (NMVEstimationMu)
 from src.register.algorithm_purpose import AlgorithmPurpose
 from src.register.register import Registry
 
@@ -42,5 +42,5 @@ ALGORITHM_REGISTRY.register("density_estim_inv_mellin_rqmc_int", AlgorithmPurpos
     NMVEstimationDensityInvMTquadRQMCBased
 )
 ALGORITHM_REGISTRY.register("density_estim_post_widder", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
-    SemiParametricGEstimationPostWidder
+    NMVEstimationDensityPW
 )

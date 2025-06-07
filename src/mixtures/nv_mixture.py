@@ -38,7 +38,7 @@ class NormalVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self, n: int, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+    def _compute_moment(self, n: int, rqmc_params: dict[str, Any]) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
 
         def integrand(u: float) -> float:
@@ -53,10 +53,7 @@ class NormalVarianceMixtures(AbstractMixtures):
 
         return RQMC(integrand, **rqmc_params)()
 
-    def compute_moments(self, ns: list[int], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
-        return [self.compute_moment(n, rqmc_params) for n in ns]
-
-    def compute_cdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+    def _compute_cdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         param_norm = norm(0, gamma)
 
@@ -65,10 +62,8 @@ class NormalVarianceMixtures(AbstractMixtures):
 
         return RQMC(integrand, **rqmc_params)()
 
-    def compute_cdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
-        return [self.compute_cdf(x, rqmc_params) for x in xs]
 
-    def compute_pdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+    def _compute_pdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 
@@ -77,10 +72,7 @@ class NormalVarianceMixtures(AbstractMixtures):
 
         return RQMC(integrand, **rqmc_params)()
 
-    def compute_pdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
-        return [self.compute_pdf(x, rqmc_params) for x in xs]
-
-    def compute_logpdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
+    def _compute_logpdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 
@@ -88,9 +80,6 @@ class NormalVarianceMixtures(AbstractMixtures):
             return self._log_integrand_func(u, d, gamma)
 
         return LogRQMC(integrand, **rqmc_params)()
-
-    def compute_logpdfs(self, xs: list[float], rqmc_params: dict[str, Any]) -> list[tuple[float, float]]:
-        return [self.compute_logpdf(x, rqmc_params) for x in xs]
 
     @lru_cache()
     def _integrand_func(self, u: float, d: float, gamma: float) -> float:

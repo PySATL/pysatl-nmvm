@@ -40,7 +40,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
+    def _compute_moment(self, n: int, params: dict) -> tuple[float, float]:
         def integral_func(u: float) -> float:
             result = 0
             for k in range(0, n + 1):
@@ -70,7 +70,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         return rqmc()
 
 
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
+    def _compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
         def inner_func(u: float) -> float:
             ppf = self.params.distribution.ppf(u)
             if self.mixture_form == "classical":
@@ -85,7 +85,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         return rqmc()
 
 
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
+    def _compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
         def inner_func(u: float) -> float:
             ppf = self.params.distribution.ppf(u)
             if self.mixture_form == "classical":
@@ -113,7 +113,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         return val, rqmc_res[1]
 
 
-    def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
+    def _compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
         def inner_func(u: float) -> float:
             ppf = self.params.distribution.ppf(u)
             if self.mixture_form == "classical":
@@ -132,18 +132,3 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
             val = self.params.mu * (x - self.params.alpha) + rqmc_res[0]
 
         return val, rqmc_res[1]
-
-    def compute_moments(self, values: list[int], params: dict) -> list[tuple[float, float]]:
-        return [self.compute_moment(n,params) for n in values]
-
-
-    def compute_cdfs(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-        return [self.compute_cdf(x,params) for x in xs]
-
-
-    def compute_pdfs(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-        return [self.compute_pdf(x,params) for x in xs]
-
-
-    def compute_logpdfs(self, xs: list[float], params: dict) -> list[tuple[float, float]]:
-        return [self.compute_logpdf(x,params) for x in xs]

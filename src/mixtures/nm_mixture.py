@@ -41,7 +41,7 @@ class NormalMeanMixtures(AbstractMixtures):
             raise ValueError("Gamma can't be zero")
         return data_class
 
-    def compute_moment(self, n: int, params: dict) -> Tuple[float, float]:
+    def _compute_moment(self, n: int, params: dict) -> Tuple[float, float]:
         mixture_moment = 0
         error_tolerance = 0
         if self.mixture_form == "classical":
@@ -59,10 +59,7 @@ class NormalMeanMixtures(AbstractMixtures):
                 mixture_moment += coefficient * mixing_moment[0] * norm.moment(k)
         return mixture_moment, error_tolerance
 
-    def compute_moments(self, values: List[int], params: dict) -> List[Tuple[float, float]]:
-        return [self.compute_moment(n, params) for n in values]
-
-    def compute_cdf(self, x: float, params: dict) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float, params: dict) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             rqmc = RQMC(
                 lambda u: norm.cdf((x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / np.abs(self.params.gamma)),
@@ -75,10 +72,7 @@ class NormalMeanMixtures(AbstractMixtures):
             )
         return rqmc()
 
-    def compute_cdfs(self, values: List[float], params: dict) -> List[Tuple[float, float]]:
-        return [self.compute_cdf(x, params) for x in values]
-
-    def compute_pdf(self, x: float, params: dict) -> Tuple[float, float]:
+    def _compute_pdf(self, x: float, params: dict) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             rqmc = RQMC(
                 lambda u: (1 / np.abs(self.params.gamma))
@@ -92,10 +86,7 @@ class NormalMeanMixtures(AbstractMixtures):
             )
         return rqmc()
 
-    def compute_pdfs(self, values: List[float], params: dict) -> List[Tuple[float, float]]:
-        return [self.compute_pdf(x, params) for x in values]
-
-    def compute_logpdf(self, x: float, params: dict) -> Tuple[float, float]:
+    def _compute_logpdf(self, x: float, params: dict) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             rqmc = LogRQMC(
                 lambda u: (
@@ -110,6 +101,3 @@ class NormalMeanMixtures(AbstractMixtures):
                 **params,
             )
         return rqmc()
-
-    def compute_log_pdfs(self, values: List[float], params: dict) -> List[Tuple[float, float]]:
-        return [self.compute_logpdf(x, params) for x in values]

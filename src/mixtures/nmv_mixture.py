@@ -38,6 +38,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     _canonical_collector = _NMVMCanonicalDataCollector
 
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
+        self.mixture_form = mixture_form
         super().__init__(mixture_form, **kwargs)
 
     def _compute_moment(self, n: int, params: dict) -> tuple[float, float]:

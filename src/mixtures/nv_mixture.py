@@ -36,6 +36,7 @@ class NormalVarianceMixtures(AbstractMixtures):
     _canonical_collector = _NVMCanonicalDataCollector
 
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
+        self.mixture_form = mixture_form
         super().__init__(mixture_form, **kwargs)
 
     def _compute_moment(self, n: int, rqmc_params: dict[str, Any]) -> tuple[float, float]:

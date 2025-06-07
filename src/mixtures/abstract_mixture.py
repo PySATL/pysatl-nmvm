@@ -32,10 +32,10 @@ class AbstractMixtures(metaclass=ABCMeta):
     @abstractmethod
     def _compute_moment(self, n: int, params: dict) -> tuple[float, float]: ...
 
-    def compute_moment(self, x: list[float] | float | NDArray[np.float64], params: dict) -> list[float] | float | NDArray[np.float64]:
+    def compute_moment(self, x: list[float] | float | NDArray[np.float64], params: dict) -> List[Tuple[float, float]] | Tuple[float, float] | np.ndarray[Tuple[float, float]] :
         # handle input type
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_moment(xp, params) for xp in x])
+            return np.array([self._compute_moment(xp, params) for xp in x], dtype=object)
         elif isinstance(x, list):
             return [self._compute_moment(xp, params) for xp in x]
         elif isinstance(x, float):
@@ -46,10 +46,10 @@ class AbstractMixtures(metaclass=ABCMeta):
     @abstractmethod
     def _compute_pdf(self,x: float, params: dict) -> tuple[float, float]: ...
 
-    def compute_pdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> list[float] | float | NDArray[np.float64]:
+    def compute_pdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> List[Tuple[float, float]] | Tuple[float, float] | np.ndarray[Tuple[float, float]]:
         # handle input type
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_pdf(xp, params) for xp in x])
+            return np.array([self._compute_pdf(xp, params) for xp in x],dtype=object)
         elif isinstance(x, list):
             return [self._compute_pdf(xp, params) for xp in x]
         elif isinstance(x, float):
@@ -60,9 +60,9 @@ class AbstractMixtures(metaclass=ABCMeta):
     @abstractmethod
     def _compute_logpdf(self,x: float, params: dict) -> tuple[float, float]:...
 
-    def compute_logpdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> list[float] | float | NDArray[np.float64]:
+    def compute_logpdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> List[Tuple[float, float]] | Tuple[float, float] | np.ndarray[Tuple[float, float]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_logpdf(xp, params) for xp in x])
+            return np.array([self._compute_logpdf(xp, params) for xp in x],dtype=object)
         elif isinstance(x, list):
             return [self._compute_logpdf(xp, params) for xp in x]
         elif isinstance(x, float):
@@ -73,9 +73,9 @@ class AbstractMixtures(metaclass=ABCMeta):
     @abstractmethod
     def _compute_cdf(self, x: float, rqmc_params: dict[str, Any]) -> tuple[float, float]: ...
 
-    def compute_cdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> list[float] | float | NDArray[np.float64]:
+    def compute_cdf(self, x: list[float] | float | NDArray[np.float64], params: dict) -> List[Tuple[float, float]] | Tuple[float, float] | np.ndarray[Tuple[float, float]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_cdf(xp, params) for xp in x])
+            return np.array([self._compute_cdf(xp, params) for xp in x],dtype=object)
         elif isinstance(x, list):
             return [self._compute_cdf(xp, params) for xp in x]
         elif isinstance(x, float):

@@ -31,6 +31,7 @@ class NormalMeanMixtures(AbstractMixtures):
     _canonical_collector = _NMMCanonicalDataCollector
 
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
+        self.mixture_form = mixture_form
         super().__init__(mixture_form, **kwargs)
 
     def _params_validation(self, data_collector: Any, params: dict[str, float | rv_continuous | rv_frozen]) -> Any:

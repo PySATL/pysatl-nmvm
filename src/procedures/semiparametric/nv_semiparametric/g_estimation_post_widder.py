@@ -13,7 +13,7 @@ N_DEFAULT_VALUE = 2
 X_DATA_DEFAULT_VALUE = [1.0]
 
 
-class NMVEstimationDensityPW:
+class NVEstimationDensityPW:
     """Estimation of mixing density function g (xi density function) of NVM mixture represented in classical form Y =
     alpha + sigma*sqrt(xi)*N, where alpha = 0 and mu, sigma are given.
 

@@ -11,7 +11,7 @@ from src.procedures.semiparametric.nv_semiparametric.g_estimation_given_mu impor
     NVEstimationDensityInvMT,
 )
 from src.procedures.semiparametric.nv_semiparametric.g_estimation_post_widder import (
-    NMVEstimationDensityPW,
+    NVEstimationDensityPW,
 )
 from src.procedures.semiparametric.nvm_semiparametric.g_estimation_given_mu import (
     NMVEstimationDensityInvMTquad,

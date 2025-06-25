@@ -21,6 +21,7 @@ class AbstractMixtures(metaclass=ABCMeta):
             mixture_form: Form of Mixture classical or Canonical
             **kwargs: Parameters of Mixture
         """
+        self.mixture_form = mixture_form
         if mixture_form == "classical":
             self.params = self._params_validation(self._classical_collector, kwargs)
         elif mixture_form == "canonical":

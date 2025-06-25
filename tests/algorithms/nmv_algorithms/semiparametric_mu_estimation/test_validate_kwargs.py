@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from src.algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
+from algorithms.semiparam_algorithms.nvm_semi_param_algorithms.mu_estimation import SemiParametricMuEstimation
 
 
 def _test_omega(x: float) -> float:

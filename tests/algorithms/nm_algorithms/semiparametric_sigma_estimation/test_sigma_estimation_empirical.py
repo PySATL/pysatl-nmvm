@@ -1,11 +1,12 @@
 import math
+import numpy as np
 
 import pytest
 from scipy.stats import expon, uniform
 
-from src.estimators.semiparametric.nm_semiparametric_estimator import NMSemiParametricEstimator
-from src.generators.nm_generator import NMGenerator
-from src.mixtures.nm_mixture import NormalMeanMixtures
+from estimators.semiparametric.nm_semiparametric_estimator import NMSemiParametricEstimator
+from generators.nm_generator import NMGenerator
+from mixtures.nm_mixture import NormalMeanMixtures
 
 
 class TestSemiParametricSigmaEstimationEmpirical:

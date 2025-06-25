@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 from scipy import ndimage
-from scipy.stats import norm
+from scipy.stats import norm, expon, uniform
 
-from src.generators.nm_generator import NMGenerator
-from src.mixtures.nm_mixture import *
+from generators.nm_generator import NMGenerator
+from mixtures.nm_mixture import *
 
 
 class TestMixingNormal:

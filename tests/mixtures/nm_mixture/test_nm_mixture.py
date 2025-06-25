@@ -2,10 +2,10 @@ from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 import pytest
-from scipy.stats import halfnorm, norm, skewnorm
+from scipy.stats import halfnorm, norm, skewnorm, expon, uniform
 from sklearn.metrics import mean_absolute_error
 
-from src.mixtures.nm_mixture import NormalMeanMixtures, _NMMCanonicalDataCollector, _NMMClassicDataCollector
+from mixtures.nm_mixture import NormalMeanMixtures, _NMMCanonicalDataCollector, _NMMClassicDataCollector
 
 
 def create_mixture_and_grid(params):

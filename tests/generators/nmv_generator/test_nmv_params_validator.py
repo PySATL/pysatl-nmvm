@@ -1,7 +1,7 @@
 import pytest
 from scipy.stats import norm
 
-from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
+from mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
 
 @pytest.mark.ci

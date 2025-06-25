@@ -2,10 +2,10 @@ from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 import pytest
-from scipy.stats import genhyperbolic, geninvgauss
+from scipy.stats import genhyperbolic, geninvgauss, expon, uniform
 from sklearn.metrics import mean_absolute_error
 
-from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
+from mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
 
 def get_datasets(mixture_func, distribution_func, values):

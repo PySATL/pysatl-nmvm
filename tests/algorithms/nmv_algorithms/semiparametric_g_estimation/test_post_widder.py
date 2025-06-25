@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 from mpmath import ln
-from scipy.stats import expon, gamma
+from scipy.stats import expon, gamma, uniform
 
-from src.estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiParametricEstimator
-from src.generators.nmv_generator import NMVGenerator
-from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
+from estimators.semiparametric.nmv_semiparametric_estimator import NMVSemiParametricEstimator
+from generators.nmv_generator import NMVGenerator
+from mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
 
 class TestPostWidder:

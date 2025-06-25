@@ -2,11 +2,11 @@ import math
 
 import numpy as np
 import pytest
-from scipy.stats import expon
+from scipy.stats import expon, uniform
 
-from src.estimators.semiparametric.nv_semiparametric_estimator import NVSemiParametricEstimator
-from src.generators.nv_generator import NVGenerator
-from src.mixtures.nv_mixture import NormalVarianceMixtures
+from estimators.semiparametric.nv_semiparametric_estimator import NVSemiParametricEstimator
+from generators.nv_generator import NVGenerator
+from mixtures.nv_mixture import NormalVarianceMixtures
 
 
 class TestSemiParametricMixingDensityEstimationNV:

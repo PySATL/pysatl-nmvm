@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from typing import Any, List, Tuple
 
 import numpy as np
-from scipy.integrate import quad
 from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
+from src.algorithms.support_algorithms.quad_integrator import QuadIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 
@@ -102,3 +103,4 @@ class NormalMeanMixtures(AbstractMixtures):
                 **params,
             )
         return rqmc()
+

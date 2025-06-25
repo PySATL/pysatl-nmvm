@@ -8,7 +8,8 @@ from scipy.stats import geninvgauss, norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 
@@ -73,6 +74,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
 
     def _compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
         def inner_func(u: float) -> float:
+
             ppf = self.params.distribution.ppf(u)
             if self.mixture_form == "classical":
                 point = (x - self.params.alpha) / (np.sqrt(ppf) * self.params.gamma) - (
@@ -88,6 +90,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
 
     def _compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
         def inner_func(u: float) -> float:
+
             ppf = self.params.distribution.ppf(u)
             if self.mixture_form == "classical":
                 return (
@@ -133,3 +136,4 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
             val = self.params.mu * (x - self.params.alpha) + rqmc_res[0]
 
         return val, rqmc_res[1]
+

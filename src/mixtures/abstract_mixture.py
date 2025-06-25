@@ -7,6 +7,7 @@ from numpy.typing import NDArray
 from scipy.stats import rv_continuous
 from scipy.stats.distributions import rv_frozen
 
+from src.algorithms.support_algorithms.integrator import Integrator
 
 class AbstractMixtures(metaclass=ABCMeta):
     """Base class for Mixtures"""
@@ -21,6 +22,7 @@ class AbstractMixtures(metaclass=ABCMeta):
             mixture_form: Form of Mixture classical or Canonical
             **kwargs: Parameters of Mixture
         """
+        self.mixture_form = mixture_form
         if mixture_form == "classical":
             self.params = self._params_validation(self._classical_collector, kwargs)
         elif mixture_form == "canonical":

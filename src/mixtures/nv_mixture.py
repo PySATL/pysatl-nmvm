@@ -8,7 +8,8 @@ from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 
@@ -51,6 +52,8 @@ class NormalVarianceMixtures(AbstractMixtures):
                 * norm.moment(k)
                 for k in range(n + 1)
             )
+        result = integrator.compute(func=integrate_func)
+        return result.value, result.error
 
         return RQMC(integrand, **rqmc_params)()
 
@@ -82,6 +85,7 @@ class NormalVarianceMixtures(AbstractMixtures):
 
         return LogRQMC(integrand, **rqmc_params)()
 
+
     @lru_cache()
     def _integrand_func(self, u: float, d: float, gamma: float) -> float:
         ppf = self.params.distribution.ppf(u)
@@ -90,3 +94,4 @@ class NormalVarianceMixtures(AbstractMixtures):
     def _log_integrand_func(self, u: float, d: float, gamma: float) -> float:
         ppf = self.params.distribution.ppf(u)
         return -(ppf * np.log(np.pi * 2 * ppf * gamma ** 2) + d) / (2 * ppf)
+

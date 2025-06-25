@@ -7,6 +7,7 @@ from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 @dataclass
@@ -28,7 +29,7 @@ class NormalMeanMixtures(AbstractMixtures):
     def __init__(
         self,
         mixture_form: str,
-        integrator_cls: Type[Integrator] = Integrator,
+        integrator_cls: Type[Integrator] = RQMCIntegrator,
         integrator_params: Dict[str, Any] = None,
         **kwargs: Any
     ) -> None:

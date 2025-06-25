@@ -36,3 +36,19 @@ no_implicit_optional = "False"
 testpaths = ["tests"]
 addopts = ["--color=yes", "-s"]
 markers = ["ci: test that run on ci"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pysatl-nmvm"
+version = "0.1.0"
+description = "PySATL NMVM Module"
+authors = [
+    { name="Engelsgeduld" },
+    { name="Andreev Sergey" },
+    { name="Sazonova Irina" }
+]
+readme = ""
+requires-python = ">=3.8"

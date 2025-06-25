@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: pysatl-nmvm
+Version: 0.1.0
+Summary: PySATL NMVM Module
+Author: Engelsgeduld, Andreev Sergey, Sazonova Irina
+Requires-Python: >=3.8
+License-File: LICENSE
+Dynamic: license-file

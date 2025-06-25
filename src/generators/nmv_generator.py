@@ -1,9 +1,15 @@
+"""Normal Mean-Variance (NMV) generator module.
+
+This module provides generators for Normal Mean-Variance mixtures
+in both classical and canonical forms.
+"""
+
 import numpy._typing as tpg
 import scipy
 
-from src.generators.abstract_generator import AbstractGenerator
-from src.mixtures.abstract_mixture import AbstractMixtures
-from src.mixtures.nmv_mixture import NormalMeanVarianceMixtures
+from generators.abstract_generator import AbstractGenerator
+from mixtures.abstract_mixture import AbstractMixtures
+from mixtures.nmv_mixture import NormalMeanVarianceMixtures
 
 
 class NMVGenerator(AbstractGenerator):

@@ -1,10 +1,16 @@
+"""Eigenvalue-based sigma estimation for NM semiparametric mixtures.
+
+This module implements sigma estimation using eigenvalue decomposition
+for Normal Mean semiparametric mixtures.
+"""
+
 import math
 from typing import Optional, Tuple, TypedDict
 
 import numpy as np
 from scipy.linalg import eigh
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 L_DEFAULT_VALUE = 5
 K_DEFAULT_VALUE = 10

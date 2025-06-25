@@ -1,3 +1,9 @@
+"""Mu estimation algorithm for NVM semiparametric mixtures.
+
+This module implements the estimation of mu parameter in Normal Mean-Variance
+semiparametric mixtures using binary search and Lipschitz continuous functions.
+"""
+
 import math
 from typing import Callable, Optional, TypedDict, Unpack
 
@@ -5,7 +11,7 @@ import mpmath
 import numpy as np
 from numpy import _typing
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 M_DEFAULT_VALUE = 1000
 TOLERANCE_DEFAULT_VALUE = 10**-5

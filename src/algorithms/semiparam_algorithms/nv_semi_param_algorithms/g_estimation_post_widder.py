@@ -1,3 +1,9 @@
+"""Post-Widder algorithm for G-estimation in NV semiparametric mixtures.
+
+This module implements the Post-Widder inversion method for estimating
+the mixing density function g in Normal Variance semiparametric mixtures.
+"""
+
 import math
 from typing import TypedDict, Unpack
 
@@ -6,7 +12,7 @@ import numpy as np
 from numpy import _typing
 from sympy import bell
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 SIGMA_DEFAULT_VALUE = 1.0
 N_DEFAULT_VALUE = 2

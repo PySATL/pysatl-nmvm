@@ -1,10 +1,16 @@
+"""Logarithmic Randomized Quasi-Monte Carlo (Log-RQMC) integration module.
+
+This module provides the LogRQMC class for numerical integration of
+logarithmic functions using randomized quasi-Monte Carlo methods.
+"""
+
 from typing import Callable
 
 import numpy as np
 import numpy._typing as tpg
 import scipy
 
-from src.algorithms.support_algorithms.rqmc import RQMC
+from algorithms.support_algorithms.rqmc import RQMC
 
 
 class LogRQMC(RQMC):

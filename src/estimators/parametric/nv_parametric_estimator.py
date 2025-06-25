@@ -1,8 +1,14 @@
+"""Normal Variance parametric estimator module.
+
+This module provides the NVParametricEstimator class for
+parametric estimation in Normal Variance mixtures.
+"""
+
 from numpy import _typing
 
-from src.estimators.estimate_result import EstimateResult
-from src.estimators.parametric.abstract_parametric_estimator import AbstractParametricEstimator
-from src.register.algorithm_purpose import AlgorithmPurpose
+from estimators.estimate_result import EstimateResult
+from estimators.parametric.abstract_parametric_estimator import AbstractParametricEstimator
+from register.algorithm_purpose import AlgorithmPurpose
 
 
 class NVParametricEstimator(AbstractParametricEstimator):

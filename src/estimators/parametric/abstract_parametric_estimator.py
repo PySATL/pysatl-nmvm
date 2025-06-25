@@ -1,7 +1,13 @@
+"""Abstract parametric estimator base class module.
+
+This module defines the AbstractParametricEstimator base class
+for parametric estimation algorithms.
+"""
+
 from numpy import _typing
 
-from src.estimators.abstract_estimator import AbstractEstimator
-from src.estimators.estimate_result import EstimateResult
+from estimators.abstract_estimator import AbstractEstimator
+from estimators.estimate_result import EstimateResult
 
 
 class AbstractParametricEstimator(AbstractEstimator):

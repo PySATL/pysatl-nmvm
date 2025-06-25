@@ -1,8 +1,14 @@
+"""Abstract generator base class module.
+
+This module defines the AbstractGenerator base class for generating
+samples from various mixture distributions.
+"""
+
 from abc import abstractmethod
 
 import numpy._typing as tpg
 
-from src.mixtures.abstract_mixture import AbstractMixtures
+from mixtures.abstract_mixture import AbstractMixtures
 
 
 class AbstractGenerator:

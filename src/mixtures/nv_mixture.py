@@ -1,3 +1,9 @@
+"""Normal Variance (NV) mixture module.
+
+This module provides the NormalVarianceMixtures class for Normal Variance
+mixture distributions in classical and canonical forms.
+"""
+
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
@@ -7,9 +13,9 @@ from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
-from src.mixtures.abstract_mixture import AbstractMixtures
+from algorithms.support_algorithms.log_rqmc import LogRQMC
+from algorithms.support_algorithms.rqmc import RQMC
+from mixtures.abstract_mixture import AbstractMixtures
 
 
 @dataclass
@@ -40,11 +46,12 @@ class NormalVarianceMixtures(AbstractMixtures):
         super().__init__(mixture_form, **kwargs)
 
     def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of  NVM
+        """Compute n-th moment of NVM.
+        
         Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
+            n: Moment ordinal
+            params: Parameters of integration algorithm
+            
         Returns: moment approximation and error tolerance
         """
         gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1

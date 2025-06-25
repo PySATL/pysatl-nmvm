@@ -1,9 +1,15 @@
+"""Normal Variance (NV) generator module.
+
+This module provides generators for Normal Variance mixtures
+in both classical and canonical forms.
+"""
+
 import numpy._typing as tpg
 import scipy
 
-from src.generators.abstract_generator import AbstractGenerator
-from src.mixtures.abstract_mixture import AbstractMixtures
-from src.mixtures.nv_mixture import NormalVarianceMixtures
+from generators.abstract_generator import AbstractGenerator
+from mixtures.abstract_mixture import AbstractMixtures
+from mixtures.nv_mixture import NormalVarianceMixtures
 
 
 class NVGenerator(AbstractGenerator):

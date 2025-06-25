@@ -1,3 +1,10 @@
+"""Randomized Quasi-Monte Carlo (RQMC) integration module.
+
+This module provides the RQMC class for numerical integration using
+randomized quasi-Monte Carlo methods with error estimation and adaptive
+refinement capabilities.
+"""
+
 from typing import Callable
 
 import numpy as np
@@ -12,7 +19,7 @@ NUMBA_FAST_MATH = True
 
 
 class RQMC:
-    """Randomize Quasi Monte Carlo Method
+    """Randomized Quasi-Monte Carlo integration class.
 
     Args:
         func: integrated function
@@ -21,6 +28,8 @@ class RQMC:
         base_n: number of columns of random values matrix
         i_max: allowed number of cycles
         a: parameter for quantile of normal distribution
+
+    Returns: approximation for integral of function from 0 to 1
 
     """
 

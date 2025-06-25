@@ -1,7 +1,13 @@
+"""Abstract semiparametric estimator base class module.
+
+This module defines the AbstractSemiParametricEstimator base class
+for semiparametric estimation algorithms.
+"""
+
 from numpy import _typing
 
-from src.estimators.abstract_estimator import AbstractEstimator
-from src.estimators.estimate_result import EstimateResult
+from estimators.abstract_estimator import AbstractEstimator
+from estimators.estimate_result import EstimateResult
 
 
 class AbstractSemiParametricEstimator(AbstractEstimator):

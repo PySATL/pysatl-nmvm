@@ -1,3 +1,9 @@
+"""Abstract mixture base class module.
+
+This module defines the AbstractMixtures base class for various
+mixture distribution implementations.
+"""
+
 from abc import ABCMeta, abstractmethod
 from dataclasses import fields
 from typing import Any

@@ -1,10 +1,16 @@
+"""Convolution-based G-estimation for NM semiparametric mixtures.
+
+This module implements the estimation of mixing density function g using
+convolution methods for Normal Mean semiparametric mixtures.
+"""
+
 import math
 from typing import Any, Callable, Dict, List, Optional, TypedDict, Unpack
 
 import numpy as np
 from numpy import _typing
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 SIGMA_DEFAULT_VALUE: float = 1
 BOHMAN_N_DEFAULT_VALUE: int = 10000

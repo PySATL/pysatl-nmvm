@@ -8,7 +8,8 @@ from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.algorithms.support_algorithms.integrator import Integrator
+from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 
@@ -39,12 +40,12 @@ class NormalVarianceMixtures(AbstractMixtures):
     def __init__(self, mixture_form: str, **kwargs: Any) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
+    def compute_moment(self, n: int, integrator: Integrator = RQMCIntegrator()) -> tuple[float, float]:
         """
         Compute n-th moment of  NVM
         Args:
             n (): Moment ordinal
-            params (): Parameters of integration algorithm
+            integrator (): class of integrator with params to computing
         Returns: moment approximation and error tolerance
         """
         gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
@@ -60,16 +61,15 @@ class NormalVarianceMixtures(AbstractMixtures):
                     for k in range(0, n + 1)
                 ]
             )
+        result = integrator.compute(func=integrate_func)
+        return result.value, result.error
 
-        result = RQMC(integrate_func, **params)()
-        return result
-
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
+    def compute_cdf(self, x: float, integrator: Integrator = RQMCIntegrator()) -> tuple[float, float]:
         parametric_norm = norm(0, self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1)
-        rqmc = RQMC(
-            lambda u: parametric_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u))), **params
+        result = integrator.compute(func=
+            lambda u: parametric_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u)))
         )
-        return rqmc()
+        return result.value, result.error
 
     @lru_cache()
     def _integrand_func(self, u: float, d: float, gamma: float) -> float:
@@ -80,11 +80,11 @@ class NormalVarianceMixtures(AbstractMixtures):
         ppf = self.params.distribution.ppf(u)
         return -(ppf * np.log(np.pi * 2 * ppf * gamma**2) + d) / (2 * ppf)
 
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
+    def compute_pdf(self, x: float, integrator: Integrator = RQMCIntegrator()) -> tuple[float, float]:
         gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1
         d = (x - self.params.alpha) ** 2 / gamma**2
-        rqmc = RQMC(lambda u: self._integrand_func(u, d, gamma), **params)
-        return rqmc()
+        result = integrator.compute(func=lambda u: self._integrand_func(u, d, gamma))
+        return result.value, result.error
 
     def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
         gamma = self.params.gamma if isinstance(self.params, _NVMClassicDataCollector) else 1

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Type, Dict, Tuple, Union, List
+from typing import Any, Type, Dict, Tuple
 
 import numpy as np
 from scipy.special import binom
@@ -7,15 +7,12 @@ from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.algorithms.support_algorithms.integrator import Integrator
-from src.algorithms.support_algorithms.quad_integrator import QuadIntegrator
-from src.algorithms.support_algorithms.rqmc import RQMCIntegrator
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 @dataclass
 class _NMMClassicDataCollector:
     alpha: float | int | np.int64
-    beta: float | int | np.int64
+    beta:  float | int | np.int64
     gamma: float | int | np.int64
     distribution: rv_frozen | rv_continuous
 
@@ -31,7 +28,7 @@ class NormalMeanMixtures(AbstractMixtures):
     def __init__(
         self,
         mixture_form: str,
-        integrator_cls: Type[Integrator] = RQMCIntegrator,
+        integrator_cls: Type[Integrator] = Integrator,
         integrator_params: Dict[str, Any] = None,
         **kwargs: Any
     ) -> None:
@@ -51,53 +48,56 @@ class NormalMeanMixtures(AbstractMixtures):
         if self.mixture_form == "classical":
             for k in range(n + 1):
                 for l in range(k + 1):
-                    coeff = binom(n, n - k) * binom(k, k - l) * (self.params.beta ** (k - l)) * (self.params.gamma ** l)
+                    coeff = binom(n, n - k) * binom(k, k - l)
                     def mix(u: float) -> float:
-                        return self.params.distribution.ppf(u) ** (k - l)
-                    integrator = self.integrator_cls(**(self.integrator_params or {}))
-                    res = integrator.compute(mix)
-                    mixture_moment += coeff * (self.params.alpha ** (n - k)) * res.value * norm.moment(l)
-                    error += coeff * res.error * (self.params.alpha ** (n - k)) * norm.moment(l)
+                        return (
+                            self.params.distribution.ppf(u) ** (k - l)
+                        )
+                    res = self.integrator_cls(**(self.integrator_params or {})).compute(mix)
+                    mixture_moment += coeff * (self.params.beta ** (k - l)) * (self.params.gamma ** l) * (self.params.alpha ** (n - k)) * res.value * norm.moment(l)
+                    error += coeff * (self.params.beta ** (k - l)) * (self.params.gamma ** l) * (self.params.alpha ** (n - k)) * res.error * norm.moment(l)
         else:
             for k in range(n + 1):
-                coeff = binom(n, n - k) * (self.params.sigma ** k)
+                coeff = binom(n, n - k)
                 def mix(u: float) -> float:
                     return self.params.distribution.ppf(u) ** (n - k)
-                integrator = self.integrator_cls(**(self.integrator_params or {}))
-                res = integrator.compute(mix)
-                mixture_moment += coeff * res.value * norm.moment(k)
-                error += coeff * res.error * norm.moment(k)
+                res = self.integrator_cls(**(self.integrator_params or {})).compute(mix)
+                mixture_moment += coeff * (self.params.sigma ** k) * res.value * norm.moment(k)
+                error += coeff * (self.params.sigma ** k) * res.error * norm.moment(k)
         return mixture_moment, error
 
-    def _compute_cdf(self, x: float, params: Dict[str, Any]) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             def fn(u: float) -> float:
-                return norm.cdf((x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / abs(self.params.gamma))
+                p = self.params.distribution.ppf(u)
+                return norm.cdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
         else:
             def fn(u: float) -> float:
-                return norm.cdf((x - self.params.distribution.ppf(u)) / abs(self.params.sigma))
-        integrator = self.integrator_cls(**(self.integrator_params or {}))
-        res = integrator.compute(fn)
+                p = self.params.distribution.ppf(u)
+                return norm.cdf((x - p) / abs(self.params.sigma))
+        res = self.integrator_cls(**(self.integrator_params or {})).compute(fn)
         return res.value, res.error
 
     def _compute_pdf(self, x: float) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             def fn(u: float) -> float:
-                return (1 / abs(self.params.gamma)) * norm.pdf((x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / abs(self.params.gamma))
+                p = self.params.distribution.ppf(u)
+                return (1 / abs(self.params.gamma)) * norm.pdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
         else:
             def fn(u: float) -> float:
-                return (1 / abs(self.params.sigma)) * norm.pdf((x - self.params.distribution.ppf(u)) / abs(self.params.sigma))
-        integrator = self.integrator_cls(**(self.integrator_params or {}))
-        res = integrator.compute(fn)
+                p = self.params.distribution.ppf(u)
+                return (1 / abs(self.params.sigma)) * norm.pdf((x - p) / abs(self.params.sigma))
+        res = self.integrator_cls(**(self.integrator_params or {})).compute(fn)
         return res.value, res.error
 
     def _compute_logpdf(self, x: float) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             def fn(u: float) -> float:
-                return np.log(1 / abs(self.params.gamma)) + norm.logpdf((x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / abs(self.params.gamma))
+                p = self.params.distribution.ppf(u)
+                return np.log(1 / abs(self.params.gamma)) + norm.logpdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
         else:
             def fn(u: float) -> float:
-                return np.log(1 / abs(self.params.sigma)) + norm.logpdf((x - self.params.distribution.ppf(u)) / abs(self.params.sigma))
-        integrator = self.integrator_cls(**(self.integrator_params or {}))
-        res = integrator.compute(fn)
+                p = self.params.distribution.ppf(u)
+                return np.log(1 / abs(self.params.sigma)) + norm.logpdf((x - p) / abs(self.params.sigma))
+        res = self.integrator_cls(**(self.integrator_params or {})).compute(fn)
         return res.value, res.error

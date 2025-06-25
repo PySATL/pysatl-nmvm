@@ -69,7 +69,7 @@ class NormalMeanMixtures(AbstractMixtures):
                 error += coeff * res.error * norm.moment(k)
         return mixture_moment, error
 
-    def _compute_cdf(self, x: float) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float, params: Dict[str, Any]) -> Tuple[float, float]:
         if self.mixture_form == "classical":
             def fn(u: float) -> float:
                 return norm.cdf((x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / abs(self.params.gamma))

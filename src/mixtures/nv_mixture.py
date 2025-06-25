@@ -35,12 +35,13 @@ class NormalVarianceMixtures(AbstractMixtures):
         integrator_params: Dict[str, Any] = None,
         **kwargs: Any
     ) -> None:
-        super().__init__(mixture_form, **kwargs)
+        super().__init__(mixture_form, integrator_cls=integrator_cls, integrator_params=integrator_params, **kwargs)
         self.integrator_cls = integrator_cls
         self.integrator_params = integrator_params or {}
 
-    def _compute_moment(self, n: int, __: Dict[str, Any]) -> tuple[float, float]:
+    def _compute_moment(self, n: int) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
+
         def integrand(u: float) -> float:
             return sum(
                 binom(n, k)
@@ -50,34 +51,40 @@ class NormalVarianceMixtures(AbstractMixtures):
                 * norm.moment(k)
                 for k in range(n + 1)
             )
+
         integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_cdf(self, x: float, __: Dict[str, Any]) -> tuple[float, float]:
+    def _compute_cdf(self, x: float) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         param_norm = norm(0, gamma)
+
         def integrand(u: float) -> float:
             return param_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u)))
+
         integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_pdf(self, x: float, __: Dict[str, Any]) -> tuple[float, float]:
+    def _compute_pdf(self, x: float) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
+
         def integrand(u: float) -> float:
             return self._integrand_func(u, d, gamma)
+
         integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_logpdf(self, x: float, __: Dict[str, Any]) -> tuple[float, float]:
+    def _compute_logpdf(self, x: float) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
+
         def integrand(u: float) -> float:
             return self._log_integrand_func(u, d, gamma)
-        # For log-pdf you may choose LogRQMC or any integrator that supports it
+
         integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error

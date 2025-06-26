@@ -17,7 +17,7 @@ from src.procedures.semiparametric.nvm_semiparametric.g_estimation_given_mu impo
     NMVEstimationDensityInvMTquad,
 )
 from src.procedures.semiparametric.nvm_semiparametric.g_estimation_given_mu_rqmc_based import (
-    NMVEstimationDensityInvMTquadRQMCBased,
+    SemiParametricGEstimationGivenMuRQMCBased,
 )
 from src.procedures.semiparametric.nvm_semiparametric.g_estimation_post_widder import (
     NMVEstimationDensityPW,

@@ -39,7 +39,7 @@ ALGORITHM_REGISTRY.register("sigma_estimation_laplace", AlgorithmPurpose.NM_SEMI
     NMEstimationSigmaLaplace
 )
 ALGORITHM_REGISTRY.register("density_estim_inv_mellin_rqmc_int", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
-    NMVEstimationDensityInvMTquadRQMCBased
+    SemiParametricGEstimationGivenMuRQMCBased
 )
 ALGORITHM_REGISTRY.register("density_estim_post_widder", AlgorithmPurpose.NMV_SEMIPARAMETRIC)(
     NMVEstimationDensityPW

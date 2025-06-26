@@ -5,7 +5,7 @@ import numpy._typing as tpg
 import scipy
 from numba import njit
 
-from src.algorithms.support_algorithms.integrator import IntegrationResult
+from src.procedures.support.integrator import IntegrationResult
 
 BITS = 30
 """Number of bits in XOR. Should be less than 64"""

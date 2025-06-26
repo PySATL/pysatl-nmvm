@@ -7,8 +7,8 @@ from numpy.typing import NDArray
 from scipy.stats import rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.integrator import Integrator
-from src.algorithms.support_algorithms.rqmc import RQMCIntegrator  # default integrator
+from src.procedures.support.integrator import Integrator
+from src.procedures.support.rqmc import RQMCIntegrator  # default integrator
 
 class AbstractMixtures(metaclass=ABCMeta):
     """Base class for Mixtures"""

@@ -4,7 +4,7 @@ from src.estimators.abstract_estimator import AbstractEstimator
 from src.estimators.estimate_result import EstimateResult
 
 
-class AbstractSemiParametricEstimator(AbstractEstimator):
+class AbstractSemiparEstim(AbstractEstimator):
     def __init__(self, algorithm_name: str, params: dict | None = None) -> None:
         super().__init__(algorithm_name, params)
 

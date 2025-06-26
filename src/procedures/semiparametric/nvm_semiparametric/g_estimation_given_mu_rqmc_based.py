@@ -3,11 +3,11 @@ from bisect import bisect_left
 from typing import Callable, Dict, List, Optional, TypedDict, Unpack
 
 import numpy as np
-from numpy import _typing
 from scipy.integrate import quad_vec
 from scipy.special import gamma
 
-from src.procedures.support.rqmc import RQMC
+from src.procedures.support.integrator import Integrator
+from src.procedures.support.rqmc import RQMCIntegrator
 from src.estimators.estimate_result import EstimateResult
 
 MU_DEFAULT_VALUE = 1.0
@@ -68,7 +68,7 @@ class NMVEstimationDensityInvMTquadRQMCBased:
             self.x_data,
             self.grid_size,
             self.integration_tolerance,
-            self.integration_limit,
+            self.integration_limit
         ) = self._validate_kwargs(self.n, **kwargs)
         self.denominator: float = 2 * math.pi * self.n
         self.precompute_gamma_grid()
@@ -162,15 +162,15 @@ class NMVEstimationDensityInvMTquadRQMCBased:
         x_power = self.x_powers[x][idx]
         return (self.second_u_integrals[idx] * x_power) / gamma_val
 
-    def compute_integrals_for_x(self, x: float) -> float:
+    def compute_integrals_for_x(self, x: float, integrator: Integrator = RQMCIntegrator()) -> float:
         """Compute integrals using RQMC for v-integration."""
-        first_integral = RQMC(lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).rqmc()[0]
+        first_integral = integrator.compute(func=lambda t: np.sum(self.first_v_integrand(t * self.v_value, x)) * self.v_value).value
 
-        second_integral = RQMC(lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).rqmc()[0]
+        second_integral = integrator.compute(func=lambda t: np.sum(self.second_v_integrand(-t * self.v_value, x)) * self.v_value).value
 
         total = (first_integral + second_integral) / self.denominator
         return max(0.0, total.real)
 
-    def compute(self, sample: np.ndarray) -> EstimateResult:
-        y_data = [self.compute_integrals_for_x(x) for x in self.x_data]
+    def algorithm(self, sample: np.ndarray) -> EstimateResult:
+        y_data = [self.compute_integrals_for_x(x, Integrator()) for x in self.x_data]
         return EstimateResult(list_value=y_data, success=True)

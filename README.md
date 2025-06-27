@@ -120,7 +120,7 @@ Computes given integral with the limits of integration being 0 and 1 using Rando
 
 ### Usage:
 ```Python
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.rqmc import RQMC
 rqmc = RQMC(lambda x: x**3 - x**2 + 1, error_tolerance=1e-5)
 ```
 So `rqmc()[0]` is estimated integral value and `rqmc()[1]` is current error tolerance.

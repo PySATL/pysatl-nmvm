@@ -1,261 +1,106 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Type, Dict, Tuple
 
 import numpy as np
-from scipy.integrate import quad
 from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
+from src.procedures.support.integrator import Integrator
+from src.procedures.support.rqmc import RQMCIntegrator
+from src.procedures.support.rqmc import RQMC
+from src.procedures.support.log_rqmc import LogRQMCIntegrator
+from src.procedures.support.quad_integrator import QuadIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
-
 
 @dataclass
 class _NMMClassicDataCollector:
-    """TODO: Change typing from float | int | etc to Protocol with __addition__ __multiplication__ __subtraction__"""
-
-    """Data Collector for parameters of classical NMM"""
     alpha: float | int | np.int64
-    beta: float | int | np.int64
+    beta:  float | int | np.int64
     gamma: float | int | np.int64
     distribution: rv_frozen | rv_continuous
 
-
 @dataclass
 class _NMMCanonicalDataCollector:
-    """TODO: Change typing from float | int | etc to Protocol with __addition__ __multiplication__ __subtraction__"""
-
-    """Data Collector for parameters of canonical NMM"""
     sigma: float | int | np.int64
     distribution: rv_frozen | rv_continuous
-
 
 class NormalMeanMixtures(AbstractMixtures):
     _classical_collector = _NMMClassicDataCollector
     _canonical_collector = _NMMCanonicalDataCollector
 
-    def __init__(self, mixture_form: str, **kwargs: Any) -> None:
-        """
-        Read Doc of Parent Method
-        """
-
+    def __init__(
+        self,
+        mixture_form: str,
+        **kwargs: Any
+    ) -> None:
         super().__init__(mixture_form, **kwargs)
 
     def _params_validation(self, data_collector: Any, params: dict[str, float | rv_continuous | rv_frozen]) -> Any:
-        """
-        Read parent method doc
-
-        Raises:
-            ValueError: If canonical Mixture has negative sigma parameter
-
-        """
-
         data_class = super()._params_validation(data_collector, params)
         if hasattr(data_class, "sigma") and data_class.sigma <= 0:
-            raise ValueError("Sigma cant be zero or negative")
+            raise ValueError("Sigma can't be zero or negative")
         if hasattr(data_class, "gamma") and data_class.gamma == 0:
-            raise ValueError("Gamma cant be zero")
+            raise ValueError("Gamma can't be zero")
         return data_class
 
-    def _classical_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of classical NMM
+    def _compute_moment(self, n: int, integrator: Integrator=QuadIntegrator()) -> Tuple[float, float]:
+        mixture_moment = 0.0
+        error = 0.0
+        if self.mixture_form == "classical":
+            for k in range(n + 1):
+                for l in range(k + 1):
+                    coeff = binom(n, n - k) * binom(k, k - l)
+                    def mix(u: float) -> float:
+                        return (
+                            self.params.distribution.ppf(u) ** (k - l)
+                        )
 
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
+                    res = integrator.compute(mix)
+                    mixture_moment += coeff * (self.params.beta ** (k - l)) * (self.params.gamma ** l) * (self.params.alpha ** (n - k)) * res.value * norm.moment(l)
+                    error += coeff * (self.params.beta ** (k - l)) * (self.params.gamma ** l) * (self.params.alpha ** (n - k)) * res.error * norm.moment(l)
+        else:
+            for k in range(n + 1):
+                coeff = binom(n, n - k)
+                def mix(u: float) -> float:
+                    return self.params.distribution.ppf(u) ** (n - k)
+                res = integrator.compute(mix)
+                mixture_moment += coeff * (self.params.sigma ** k) * res.value * norm.moment(k)
+                error += coeff * (self.params.sigma ** k) * res.error * norm.moment(k)
+        return mixture_moment, error
 
-        Returns: moment approximation and error tolerance
+    def _compute_cdf(self, x: float, integrator: Integrator=RQMCIntegrator()) -> Tuple[float, float]:
+        if self.mixture_form == "classical":
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return norm.cdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
+        else:
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return norm.cdf((x - p) / abs(self.params.sigma))
+        res = integrator.compute(fn)
+        return res.value, res.error
 
-        """
-        mixture_moment = 0
-        error_tolerance = 0
-        for k in range(0, n + 1):
-            for l in range(0, k + 1):
-                coefficient = binom(n, n - k) * binom(k, k - l) * (self.params.beta ** (k - l)) * (self.params.gamma**l)
-                mixing_moment = quad(lambda u: self.params.distribution.ppf(u) ** (k - l), 0, 1, **params)
-                error_tolerance += (self.params.beta ** (k - l)) * mixing_moment[1]
-                mixture_moment += coefficient * (self.params.alpha ** (n - k)) * mixing_moment[0] * norm.moment(l)
-        return mixture_moment, error_tolerance
+    def _compute_pdf(self, x: float, integrator: Integrator=RQMCIntegrator()) -> Tuple[float, float]:
+        if self.mixture_form == "classical":
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return (1 / abs(self.params.gamma)) * norm.pdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
+        else:
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return (1 / abs(self.params.sigma)) * norm.pdf((x - p) / abs(self.params.sigma))
+        res = integrator.compute(fn)
+        return res.value, res.error
 
-    def _canonical_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of canonical NMM
-
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
-
-        Returns: moment approximation and error tolerance
-
-        """
-        mixture_moment = 0
-        error_tolerance = 0
-        for k in range(0, n + 1):
-            coefficient = binom(n, n - k) * (self.params.sigma**k)
-            mixing_moment = quad(lambda u: self.params.distribution.ppf(u) ** (n - k), 0, 1, **params)
-            error_tolerance += mixing_moment[1]
-            mixture_moment += coefficient * mixing_moment[0] * norm.moment(k)
-        return mixture_moment, error_tolerance
-
-    def compute_moment(self, n: int, params: dict) -> tuple[float, float]:
-        """
-        Compute n-th moment of  NMM
-
-        Args:
-            n (): Moment ordinal
-            params (): Parameters of integration algorithm
-
-        Returns: moment approximation and error tolerance
-
-        """
-        if isinstance(self.params, _NMMClassicDataCollector):
-            return self._classical_moment(n, params)
-        return self._canonical_moment(n, params)
-
-    def _canonical_compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for canonical cdf
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: computed cdf and error tolerance
-
-        """
-        rqmc = RQMC(lambda u: norm.cdf((x - self.params.distribution.ppf(u)) / np.abs(self.params.sigma)), **params)
-        return rqmc()
-
-    def _classical_compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for classic cdf
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: computed cdf and error tolerance
-
-        """
-        rqmc = RQMC(
-            lambda u: norm.cdf(
-                (x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / np.abs(self.params.gamma)
-            ),
-            **params
-        )
-        return rqmc()
-
-    def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for cdf estimation depends on Mixture form
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: Computed pdf and error tolerance
-
-        """
-        if isinstance(self.params, _NMMCanonicalDataCollector):
-            return self._canonical_compute_cdf(x, params)
-        return self._classical_compute_cdf(x, params)
-
-    def _canonical_compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for canonical pdf
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: computed pdf and error tolerance
-
-        """
-        rqmc = RQMC(
-            lambda u: (1 / np.abs(self.params.sigma))
-            * norm.pdf((x - self.params.distribution.ppf(u)) / np.abs(self.params.sigma)),
-            **params
-        )
-        return rqmc()
-
-    def _classical_compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for classic pdf
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: computed pdf and error tolerance
-
-        """
-        rqmc = RQMC(
-            lambda u: (1 / np.abs(self.params.gamma))
-            * norm.pdf(
-                (x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / np.abs(self.params.gamma)
-            ),
-            **params
-        )
-        return rqmc()
-
-    def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for pdf estimation depends on Mixture form
-        Args:
-            x (): point
-            params (): parameters of RQMC algorithm
-
-        Returns: Computed pdf and error tolerance
-
-        """
-        if isinstance(self.params, _NMMCanonicalDataCollector):
-            return self._canonical_compute_pdf(x, params)
-        return self._classical_compute_pdf(x, params)
-
-    def _classical_compute_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for classic log pdf
-        Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
-
-        Returns: computed log pdf and error tolerance
-
-        """
-        rqmc = LogRQMC(
-            lambda u: np.log(1 / np.abs(self.params.gamma))
-            + norm.logpdf(
-                (x - self.params.alpha - self.params.beta * self.params.distribution.ppf(u)) / np.abs(self.params.gamma)
-            ),
-            **params
-        )
-        return rqmc()
-
-    def _canonical_compute_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for canonical log pdf
-        Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
-
-        Returns: computed log pdf and error tolerance
-
-        """
-        rqmc = LogRQMC(
-            lambda u: np.log(1 / np.abs(self.params.sigma))
-            + norm.logpdf((x - self.params.distribution.ppf(u)) / np.abs(self.params.sigma)),
-            **params
-        )
-        return rqmc()
-
-    def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for log pdf estimation depends on Mixture form
-        Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
-
-        Returns: Computed log pdf and error tolerance
-
-        """
-        if isinstance(self.params, _NMMCanonicalDataCollector):
-            return self._canonical_compute_log_pdf(x, params)
-        return self._classical_compute_log_pdf(x, params)
+    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMCIntegrator()) -> Tuple[float, float]:
+        if self.mixture_form == "classical":
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return np.log(1 / abs(self.params.gamma)) + norm.logpdf((x - self.params.alpha - self.params.beta * p) / abs(self.params.gamma))
+        else:
+            def fn(u: float) -> float:
+                p = self.params.distribution.ppf(u)
+                return np.log(1 / abs(self.params.sigma)) + norm.logpdf((x - p) / abs(self.params.sigma))
+        res = integrator.compute(fn)
+        return res.value, res.error

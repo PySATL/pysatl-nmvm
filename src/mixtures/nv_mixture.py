@@ -40,7 +40,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         self.integrator_cls = integrator_cls
         self.integrator_params = integrator_params or {}
 
-    def _compute_moment(self, n: int) -> tuple[float, float]:
+    def _compute_moment(self, n: int, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
 
         def integrand(u: float) -> float:
@@ -53,40 +53,36 @@ class NormalVarianceMixtures(AbstractMixtures):
                 for k in range(n + 1)
             )
 
-        integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_cdf(self, x: float) -> tuple[float, float]:
+    def _compute_cdf(self, x: float, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         param_norm = norm(0, gamma)
 
         def integrand(u: float) -> float:
             return param_norm.cdf((x - self.params.alpha) / np.sqrt(self.params.distribution.ppf(u)))
 
-        integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_pdf(self, x: float) -> tuple[float, float]:
+    def _compute_pdf(self, x: float, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 
         def integrand(u: float) -> float:
             return self._integrand_func(u, d, gamma)
 
-        integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_logpdf(self, x: float) -> tuple[float, float]:
+    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMC) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 
         def integrand(u: float) -> float:
             return self._log_integrand_func(u, d, gamma)
 
-        integrator = self.integrator_cls(**self.integrator_params)
         result = integrator.compute(integrand)
         return result.value, result.error
 

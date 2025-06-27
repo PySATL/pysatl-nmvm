@@ -32,13 +32,11 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     def __init__(
         self,
         mixture_form: str,
-        integrator_cls: Type[Integrator] = RQMCIntegrator,
-        integrator_params: Dict[str, Any] = None,
         **kwargs: Any
     ) -> None:
-        super().__init__(mixture_form, integrator_cls=integrator_cls, integrator_params=integrator_params, **kwargs)
+        super().__init__(mixture_form, **kwargs)
 
-    def _compute_moment(self, n: int) -> Tuple[float, float]:
+    def _compute_moment(self, n: int, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
         gamma = getattr(self.params, 'gamma', None)
 
         def integrand(u: float) -> float:
@@ -65,20 +63,20 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
                     s += term
             return s
 
-        res = self.integrator_cls(**(self.integrator_params or {})).compute(integrand)
+        res = integrator.compute(integrand)
         return res.value, res.error
 
-    def _compute_cdf(self, x: float) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':
                 return norm.cdf((x - self.params.alpha) / (np.sqrt(p) * self.params.gamma))
             return norm.cdf((x - self.params.alpha) / np.sqrt(p) - self.params.mu * np.sqrt(p))
 
-        res = self.integrator_cls(**(self.integrator_params or {})).compute(integrand)
+        res = integrator.compute(integrand)
         return res.value, res.error
 
-    def _compute_pdf(self, x: float) -> Tuple[float, float]:
+    def _compute_pdf(self, x: float, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':
@@ -91,21 +89,21 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
                 * np.exp(-((x - self.params.alpha) ** 2 + self.params.mu ** 2 * p ** 2) / (2 * p))
             )
 
-        res = self.integrator_cls(**(self.integrator_params or {})).compute(integrand)
+        res = integrator.compute(integrand)
         if self.mixture_form == 'classical':
             val = np.exp(self.params.beta * (x - self.params.alpha) / self.params.gamma ** 2) * res.value
         else:
             val = np.exp(self.params.mu * (x - self.params.alpha)) * res.value
         return val, res.error
 
-    def _compute_logpdf(self, x: float) -> Tuple[float, float]:
+    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMC) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':
                 return -((x - self.params.alpha) ** 2 + p ** 2 * self.params.beta ** 2 + p * self.params.gamma ** 2 * np.log(2 * np.pi * p * self.params.gamma ** 2)) / (2 * p * self.params.gamma ** 2)
             return -((x - self.params.alpha) ** 2 + p ** 2 * self.params.mu ** 2 + p * np.log(2 * np.pi * p)) / (2 * p)
 
-        res = self.integrator_cls(**(self.integrator_params or {})).compute(integrand)
+        res = integrator.compute(integrand)
         if self.mixture_form == 'classical':
             val = self.params.beta * (x - self.params.alpha) / self.params.gamma ** 2 + res.value
         else:

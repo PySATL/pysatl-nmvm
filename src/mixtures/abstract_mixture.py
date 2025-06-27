@@ -19,8 +19,6 @@ class AbstractMixtures(metaclass=ABCMeta):
     def __init__(
         self,
         mixture_form: str,
-        integrator_cls: Type[Integrator] = RQMCIntegrator,
-        integrator_params: Dict[str, Any] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -31,8 +29,7 @@ class AbstractMixtures(metaclass=ABCMeta):
             **kwargs: Parameters of Mixture (alpha, gamma, etc.)
         """
         self.mixture_form = mixture_form
-        self.integrator_cls = integrator_cls
-        self.integrator_params = integrator_params or {}
+
 
         if mixture_form == "classical":
             self.params = self._params_validation(self._classical_collector, kwargs)
@@ -42,70 +39,74 @@ class AbstractMixtures(metaclass=ABCMeta):
             raise AssertionError(f"Unknown mixture form: {mixture_form}")
 
     @abstractmethod
-    def _compute_moment(self, n: int) -> Tuple[float, float]:
+    def _compute_moment(self, n: int, integrator: Integrator) -> Tuple[float, float]:
         ...
 
     def compute_moment(
         self,
-        x: Union[List[int], int, NDArray[np.float64]]
+        x: Union[List[int], int, NDArray[np.float64]],
+            integrator: Integrator
     ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_moment(xp) for xp in x], dtype=object)
+            return np.array([self._compute_moment(xp, integrator) for xp in x], dtype=object)
         elif isinstance(x, list):
-            return [self._compute_moment(xp) for xp in x]
+            return [self._compute_moment(xp, integrator) for xp in x]
         elif isinstance(x, int):
-            return self._compute_moment(x)
+            return self._compute_moment(x, integrator)
         else:
             raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def _compute_pdf(self, x: float) -> Tuple[float, float]:
+    def _compute_pdf(self, x: float, integrator: Integrator) -> Tuple[float, float]:
         ...
 
     def compute_pdf(
         self,
-        x: Union[List[float], float, NDArray[np.float64]]
+        x: Union[List[float], float, NDArray[np.float64]],
+            integrator: Integrator
     ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_pdf(xp) for xp in x], dtype=object)
+            return np.array([self._compute_pdf(xp, integrator) for xp in x], dtype=object)
         elif isinstance(x, list):
-            return [self._compute_pdf(xp) for xp in x]
+            return [self._compute_pdf(xp, integrator) for xp in x]
         elif isinstance(x, float):
-            return self._compute_pdf(x)
+            return self._compute_pdf(x, integrator)
         else:
             raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def _compute_logpdf(self, x: float) -> Tuple[float, float]:
+    def _compute_logpdf(self, x: float, integrator: Integrator) -> Tuple[float, float]:
         ...
 
     def compute_logpdf(
         self,
-        x: Union[List[float], float, NDArray[np.float64]]
+        x: Union[List[float], float, NDArray[np.float64]],
+            integrator: Integrator
     ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_logpdf(xp) for xp in x], dtype=object)
+            return np.array([self._compute_logpdf(xp, integrator) for xp in x], dtype=object)
         elif isinstance(x, list):
-            return [self._compute_logpdf(xp) for xp in x]
+            return [self._compute_logpdf(xp, integrator) for xp in x]
         elif isinstance(x, float):
-            return self._compute_logpdf(x)
+            return self._compute_logpdf(x, integrator)
         else:
             raise TypeError(f"Unsupported type for x: {type(x)}")
 
     @abstractmethod
-    def _compute_cdf(self, x: float) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float, integrator: Integrator) -> Tuple[float, float]:
         ...
 
     def compute_cdf(
         self,
-        x: Union[List[float], float, NDArray[np.float64]]
+        x: Union[List[float], float, NDArray[np.float64]],
+            integrator: Integrator
     ) -> Union[List[Tuple[float, float]], Tuple[float, float], NDArray[Any]]:
         if isinstance(x, np.ndarray):
-            return np.array([self._compute_cdf(xp) for xp in x], dtype=object)
+            return np.array([self._compute_cdf(xp, integrator) for xp in x], dtype=object)
         elif isinstance(x, list):
-            return [self._compute_cdf(xp) for xp in x]
+            return [self._compute_cdf(xp, integrator) for xp in x]
         elif isinstance(x, float):
-            return self._compute_cdf(x)
+            return self._compute_cdf(x, integrator)
         else:
             raise TypeError(f"Unsupported type for x: {type(x)}")
 

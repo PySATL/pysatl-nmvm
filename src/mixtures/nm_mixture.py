@@ -1,3 +1,9 @@
+"""Normal Mean (NM) mixture module.
+
+This module provides the NormalMeanMixtures class for Normal Mean
+mixture distributions in classical and canonical forms.
+"""
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -7,9 +13,9 @@ from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
-from src.mixtures.abstract_mixture import AbstractMixtures
+from algorithms.support_algorithms.log_rqmc import LogRQMC
+from algorithms.support_algorithms.rqmc import RQMC
+from mixtures.abstract_mixture import AbstractMixtures
 
 
 @dataclass
@@ -147,11 +153,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return rqmc()
 
     def compute_cdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for cdf estimation depends on Mixture form
+        """Choose equation for cdf estimation depends on Mixture form.
+        
         Args:
-            x (): point
-            params (): parameters of RQMC algorithm
+            x: point
+            params: parameters of RQMC algorithm
 
         Returns: Computed pdf and error tolerance
 
@@ -161,11 +167,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return self._classical_compute_cdf(x, params)
 
     def _canonical_compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for canonical pdf
+        """Equation for canonical pdf.
+        
         Args:
-            x (): point
-            params (): parameters of RQMC algorithm
+            x: point
+            params: parameters of RQMC algorithm
 
         Returns: computed pdf and error tolerance
 
@@ -178,11 +184,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return rqmc()
 
     def _classical_compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for classic pdf
+        """Equation for classic pdf.
+        
         Args:
-            x (): point
-            params (): parameters of RQMC algorithm
+            x: point
+            params: parameters of RQMC algorithm
 
         Returns: computed pdf and error tolerance
 
@@ -197,11 +203,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return rqmc()
 
     def compute_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for pdf estimation depends on Mixture form
+        """Choose equation for pdf estimation depends on Mixture form.
+        
         Args:
-            x (): point
-            params (): parameters of RQMC algorithm
+            x: point
+            params: parameters of RQMC algorithm
 
         Returns: Computed pdf and error tolerance
 
@@ -211,11 +217,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return self._classical_compute_pdf(x, params)
 
     def _classical_compute_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for classic log pdf
+        """Equation for classic log pdf.
+        
         Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
+            x: point
+            params: parameters of LogRQMC algorithm
 
         Returns: computed log pdf and error tolerance
 
@@ -230,11 +236,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return rqmc()
 
     def _canonical_compute_log_pdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Equation for canonical log pdf
+        """Equation for canonical log pdf.
+        
         Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
+            x: point
+            params: parameters of LogRQMC algorithm
 
         Returns: computed log pdf and error tolerance
 
@@ -247,11 +253,11 @@ class NormalMeanMixtures(AbstractMixtures):
         return rqmc()
 
     def compute_logpdf(self, x: float, params: dict) -> tuple[float, float]:
-        """
-        Choose equation for log pdf estimation depends on Mixture form
+        """Choose equation for log pdf estimation depends on Mixture form.
+        
         Args:
-            x (): point
-            params (): parameters of LogRQMC algorithm
+            x: point
+            params: parameters of LogRQMC algorithm
 
         Returns: Computed log pdf and error tolerance
 

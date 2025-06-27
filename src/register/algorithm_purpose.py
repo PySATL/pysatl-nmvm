@@ -1,3 +1,9 @@
+"""Algorithm purpose enumeration module.
+
+This module defines the AlgorithmPurpose enum that specifies
+the purpose and type of estimation algorithms.
+"""
+
 import enum
 
 

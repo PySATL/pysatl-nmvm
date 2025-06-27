@@ -2,10 +2,10 @@ from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 import pytest
-from scipy.stats import invgamma, t
+from scipy.stats import invgamma, t, expon, uniform
 from sklearn.metrics import mean_absolute_error
 
-from src.mixtures.nv_mixture import NormalVarianceMixtures
+from mixtures.nv_mixture import NormalVarianceMixtures
 
 
 def get_datasets(mixture_func, distribution_func, values):

@@ -1,8 +1,14 @@
+"""Normal Variance semiparametric estimator module.
+
+This module provides the NVSemiParametricEstimator class for
+semiparametric estimation in Normal Variance mixtures.
+"""
+
 from numpy import _typing
 
-from src.estimators.estimate_result import EstimateResult
-from src.estimators.semiparametric.abstract_semiparametric_estimator import AbstractSemiParametricEstimator
-from src.register.algorithm_purpose import AlgorithmPurpose
+from estimators.estimate_result import EstimateResult
+from estimators.semiparametric.abstract_semiparametric_estimator import AbstractSemiParametricEstimator
+from register.algorithm_purpose import AlgorithmPurpose
 
 
 class NVSemiParametricEstimator(AbstractSemiParametricEstimator):

@@ -1,3 +1,9 @@
+"""Normal Mean-Variance (NMV) mixture module.
+
+This module provides the NormalMeanVarianceMixtures class for Normal Mean-Variance
+mixture distributions in classical and canonical forms.
+"""
+
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
@@ -7,9 +13,9 @@ from scipy.special import binom
 from scipy.stats import geninvgauss, norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.algorithms.support_algorithms.log_rqmc import LogRQMC
-from src.algorithms.support_algorithms.rqmc import RQMC
-from src.mixtures.abstract_mixture import AbstractMixtures
+from algorithms.support_algorithms.log_rqmc import LogRQMC
+from algorithms.support_algorithms.rqmc import RQMC
+from mixtures.abstract_mixture import AbstractMixtures
 
 
 @dataclass

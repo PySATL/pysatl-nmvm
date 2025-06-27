@@ -1,3 +1,9 @@
+"""G-estimation given mu for NVM semiparametric mixtures.
+
+This module implements the estimation of mixing density function g when
+mu is known in Normal Mean-Variance semiparametric mixtures.
+"""
+
 import math
 from bisect import bisect_left
 from typing import Callable, Dict, List, Optional, TypedDict, Unpack
@@ -7,7 +13,7 @@ from numpy import _typing
 from scipy.integrate import quad_vec
 from scipy.special import gamma
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 MU_DEFAULT_VALUE = 1.0
 GAMMA_DEFAULT_VALUE = 0.25

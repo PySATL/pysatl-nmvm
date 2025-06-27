@@ -1,6 +1,6 @@
 from typing import Callable, Generic, Optional, Tuple, Type, TypeVar
 
-from src.register.algorithm_purpose import AlgorithmPurpose
+from register.algorithm_purpose import AlgorithmPurpose
 
 T = TypeVar("T")
 
@@ -19,12 +19,11 @@ class Registry(Generic[T]):
         self.register_of_names: dict[Tuple[str, AlgorithmPurpose], Type[T]] = {}
 
     def register(self, name: str, purpose: AlgorithmPurpose) -> Callable:
-        """Register new object
+        """Register new object.
 
         Args:
             name: Class name
-            purpose: Purpose of the algorithm ("NMParametric, NVParametric, NMVParametric,
-                                                NMSemiparametric, NVSemiparametric, NMVSemiparametric")
+            purpose: Purpose of the algorithm ("NMParametric, NVParametric, NMVParametric, NMSemiparametric, NVSemiparametric, NMVSemiparametric")
 
         Returns: Decorator function
 
@@ -44,12 +43,11 @@ class Registry(Generic[T]):
         return decorator
 
     def dispatch(self, name: str, purpose: AlgorithmPurpose) -> Type[T]:
-        """Find object by name
+        """Find object by name.
 
         Args:
             name: Class name
-            purpose: Purpose of the algorithm ("NMParametric, NVParametric, NMVParametric,
-                                                NMSemiparametric, NVSemiparametric, NMVSemiparametric")
+            purpose: Purpose of the algorithm ("NMParametric, NVParametric, NMVParametric, NMSemiparametric, NVSemiparametric, NMVSemiparametric")
 
         Returns: object
 

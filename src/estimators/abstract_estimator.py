@@ -1,10 +1,16 @@
+"""Abstract estimator base class module.
+
+This module defines the AbstractEstimator base class that provides
+common functionality for all parametric and semiparametric estimators.
+"""
+
 from typing import Self
 
 from numpy import _typing
 
-from src.algorithms import ALGORITHM_REGISTRY
-from src.estimators.estimate_result import EstimateResult
-from src.register.algorithm_purpose import AlgorithmPurpose
+from algorithms import ALGORITHM_REGISTRY
+from estimators.estimate_result import EstimateResult
+from register.algorithm_purpose import AlgorithmPurpose
 
 
 class AbstractEstimator:

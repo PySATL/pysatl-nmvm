@@ -1,9 +1,15 @@
+"""Empirical sigma estimation for NM semiparametric mixtures.
+
+This module implements empirical sigma estimation methods for
+Normal Mean semiparametric mixtures.
+"""
+
 import math
 from typing import Optional, TypedDict
 
 import numpy as np
 
-from src.estimators.estimate_result import EstimateResult
+from estimators.estimate_result import EstimateResult
 
 T_DEFAULT_VALUE = 7.5
 PARAMETER_KEYS = ["t"]

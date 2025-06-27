@@ -1,8 +1,14 @@
+"""Normal Mean semiparametric estimator module.
+
+This module provides the NMSemiParametricEstimator class for
+semiparametric estimation in Normal Mean mixtures.
+"""
+
 from numpy import _typing
 
-from src.estimators.estimate_result import EstimateResult
-from src.estimators.semiparametric.abstract_semiparametric_estimator import AbstractSemiParametricEstimator
-from src.register.algorithm_purpose import AlgorithmPurpose
+from estimators.estimate_result import EstimateResult
+from estimators.semiparametric.abstract_semiparametric_estimator import AbstractSemiParametricEstimator
+from register.algorithm_purpose import AlgorithmPurpose
 
 
 class NMSemiParametricEstimator(AbstractSemiParametricEstimator):

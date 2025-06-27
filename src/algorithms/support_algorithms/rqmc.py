@@ -3,7 +3,14 @@ from typing import Callable
 import numpy as np
 import numpy._typing as tpg
 import scipy
-from numba import njit
+
+try:
+    from numba import njit
+except ImportError:
+    def njit(*args, **kwargs):
+        def wrapper(f):
+            return f
+        return wrapper
 
 BITS = 30
 """Number of bits in XOR. Should be less than 64"""

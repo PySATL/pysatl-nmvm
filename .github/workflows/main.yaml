@@ -23,4 +23,4 @@ jobs:
       - name: "Mypy"
         run: mypy
       - name: "Pytest"
-        run: python -m pytest -v -m ci
+        run: PYTHONPATH=src python -m pytest -v -m ci

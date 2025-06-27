@@ -52,7 +52,7 @@ authors = [
     {name = "Kirill-maker",email = "kirill.lukin.1999@bk.ru"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
 ]
 
@@ -65,3 +65,6 @@ build-backend = "poetry.core.masonry.api"
 packages = [
     { include = "src" }
 ]
+
+[tool.poetry.dependencies]
+python = ">=3.12"

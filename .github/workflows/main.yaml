@@ -25,4 +25,4 @@ jobs:
         continue-on-error: true
         run: poetry run mypy
       - name: "Pytest"
-        run: poetry run pytest -v -m ci
+        run: PYTHONPATH=. poetry run pytest -v -m ci

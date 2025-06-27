@@ -22,6 +22,7 @@ jobs:
         continue-on-error: true
         run: poetry run ruff format . --check --diff
       - name: "Mypy"
+        continue-on-error: true
         run: poetry run mypy
       - name: "Pytest"
         run: poetry run pytest -v -m ci

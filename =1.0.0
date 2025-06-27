@@ -1,0 +1,42 @@
+Using version ^1.7.0 for scikit-learn
+
+Updating dependencies
+Resolving dependencies...
+
+Package operations: 5 installs, 0 updates, 0 removals
+
+  - Installing llvmlite (0.42.0)
+
+PEP517 build of a dependency failed
+
+Backend subprocess exited when trying to invoke build_wheel
+
+    | Command '['/tmp/tmp9a4_7ytm/.venv/bin/python', '/usr/lib/python3.13/site-packages/pyproject_hooks/_in_process/_in_process.py', 'build_wheel', '/tmp/tmpawkuuyi4']' returned non-zero exit status 1.
+    | 
+    | running bdist_wheel
+    | /tmp/tmp9a4_7ytm/.venv/bin/python /tmp/tmpaseqh5nu/llvmlite-0.42.0/ffi/build.py
+    | LLVM version... 20.1.6
+    | 
+    | Traceback (most recent call last):
+    |   File "/tmp/tmpaseqh5nu/llvmlite-0.42.0/ffi/build.py", line 228, in <module>
+    |     main()
+    |     ~~~~^^
+    |   File "/tmp/tmpaseqh5nu/llvmlite-0.42.0/ffi/build.py", line 218, in main
+    |     main_posix('linux', '.so')
+    |     ~~~~~~~~~~^^^^^^^^^^^^^^^^
+    |   File "/tmp/tmpaseqh5nu/llvmlite-0.42.0/ffi/build.py", line 174, in main_posix
+    |     raise RuntimeError(msg)
+    | RuntimeError: Building llvmlite requires LLVM 14, got '20.1.6'. Be sure to set LLVM_CONFIG to the right executable path.
+    | Read the documentation at http://llvmlite.pydata.org/ for more information about building llvmlite.
+    | 
+    | error: command '/tmp/tmp9a4_7ytm/.venv/bin/python' failed with exit code 1
+
+Note: This error originates from the build backend, and is likely not a problem with poetry but one of the following issues with llvmlite (0.42.0)
+
+  - not supporting PEP 517 builds
+  - not specifying PEP 517 build requirements correctly
+  - the build requirements are incompatible with your operating system or Python version
+  - the build requirements are missing system dependencies (eg: compilers, libraries, headers).
+
+You can verify this by running pip wheel --no-cache-dir --use-pep517 "llvmlite (==0.42.0)".
+

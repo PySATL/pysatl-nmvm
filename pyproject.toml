@@ -36,3 +36,32 @@ no_implicit_optional = "False"
 testpaths = ["tests"]
 addopts = ["--color=yes", "-s"]
 markers = ["ci: test that run on ci"]
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.4"
+jupyter = "^1.0.0"
+pytest = "^7.4.4"
+mypy = "^1.10.0"
+ipykernel = "^6.29.4"
+
+[project]
+name = "pysatl-nmvm-module"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Kirill-maker",email = "kirill.lukin.1999@bk.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [
+    { include = "src" }
+]

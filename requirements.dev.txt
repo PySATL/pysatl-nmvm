@@ -1,5 +1,0 @@
-ruff~=0.4.4
-jupyter~=1.0.0
-pytest~=7.4.4
-mypy~=1.10.0
-ipykernel~=6.29.4

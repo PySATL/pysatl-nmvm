@@ -14,8 +14,8 @@ import scipy
 try:
     from numba import njit
 except ImportError:
-    def njit(*args, **kwargs):
-        def wrapper(f):
+    def njit(*args, **kwargs) -> Callable:
+        def wrapper(f: Callable) -> Callable:
             return f
         return wrapper
 

@@ -7,10 +7,11 @@ from scipy.special import binom
 from scipy.stats import norm, rv_continuous
 from scipy.stats.distributions import rv_frozen
 
-from src.procedures.support.log_rqmc import LogRQMC
+from src.procedures.support.log_rqmc import LogRQMCIntegrator
 
 from src.procedures.support.integrator import Integrator
 from src.procedures.support.rqmc import RQMCIntegrator
+from src.procedures.support.rqmc import RQMC
 from src.procedures.support.quad_integrator import QuadIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
@@ -40,7 +41,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         self.integrator_cls = integrator_cls
         self.integrator_params = integrator_params or {}
 
-    def _compute_moment(self, n: int, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
+    def _compute_moment(self, n: int, integrator: Integrator=QuadIntegrator()) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
 
         def integrand(u: float) -> float:
@@ -56,7 +57,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_cdf(self, x: float, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
+    def _compute_cdf(self, x: float, integrator: Integrator=QuadIntegrator()) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         param_norm = norm(0, gamma)
 
@@ -66,7 +67,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_pdf(self, x: float, integrator: Integrator=QuadIntegrator) -> tuple[float, float]:
+    def _compute_pdf(self, x: float, integrator: Integrator=QuadIntegrator()) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 
@@ -76,7 +77,7 @@ class NormalVarianceMixtures(AbstractMixtures):
         result = integrator.compute(integrand)
         return result.value, result.error
 
-    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMC) -> tuple[float, float]:
+    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMCIntegrator()) -> tuple[float, float]:
         gamma = getattr(self.params, 'gamma', 1)
         d = (x - self.params.alpha) ** 2 / gamma ** 2
 

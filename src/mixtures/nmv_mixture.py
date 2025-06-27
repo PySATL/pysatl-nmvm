@@ -9,7 +9,8 @@ from scipy.stats.distributions import rv_frozen
 
 from src.procedures.support.integrator import Integrator
 from src.procedures.support.rqmc import RQMCIntegrator
-from src.procedures.support.log_rqmc import LogRQMC
+from src.procedures.support.rqmc import RQMC
+from src.procedures.support.log_rqmc import LogRQMCIntegrator
 from src.mixtures.abstract_mixture import AbstractMixtures
 
 @dataclass
@@ -36,7 +37,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
     ) -> None:
         super().__init__(mixture_form, **kwargs)
 
-    def _compute_moment(self, n: int, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
+    def _compute_moment(self, n: int, integrator: Integrator=RQMCIntegrator()) -> Tuple[float, float]:
         gamma = getattr(self.params, 'gamma', None)
 
         def integrand(u: float) -> float:
@@ -66,7 +67,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         res = integrator.compute(integrand)
         return res.value, res.error
 
-    def _compute_cdf(self, x: float, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
+    def _compute_cdf(self, x: float, integrator: Integrator=RQMCIntegrator()) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':
@@ -76,7 +77,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
         res = integrator.compute(integrand)
         return res.value, res.error
 
-    def _compute_pdf(self, x: float, integrator: Integrator=RQMCIntegrator) -> Tuple[float, float]:
+    def _compute_pdf(self, x: float, integrator: Integrator=RQMCIntegrator()) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':
@@ -96,7 +97,7 @@ class NormalMeanVarianceMixtures(AbstractMixtures):
             val = np.exp(self.params.mu * (x - self.params.alpha)) * res.value
         return val, res.error
 
-    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMC) -> Tuple[float, float]:
+    def _compute_logpdf(self, x: float, integrator: Integrator=LogRQMCIntegrator()) -> Tuple[float, float]:
         def integrand(u: float) -> float:
             p = self.params.distribution.ppf(u)
             if self.mixture_form == 'classical':

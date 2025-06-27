@@ -8,7 +8,6 @@ from scipy.stats import rv_continuous
 from scipy.stats.distributions import rv_frozen
 
 from src.procedures.support.integrator import Integrator
-from src.procedures.support.rqmc import RQMCIntegrator  # default integrator
 
 class AbstractMixtures(metaclass=ABCMeta):
     """Base class for Mixtures"""

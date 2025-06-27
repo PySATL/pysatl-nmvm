@@ -17,11 +17,11 @@ jobs:
         run: poetry install
       - name: "Ruff checks"
         continue-on-error: true
-        run: ruff check . --output-format=full --diff
+        run: poetry run ruff check . --output-format=full --diff
       - name: "Format check"
         continue-on-error: true
-        run: ruff format . --check --diff
+        run: poetry run ruff format . --check --diff
       - name: "Mypy"
-        run: mypy
+        run: poetry run mypy
       - name: "Pytest"
-        run: python -m pytest -v -m ci
+        run: poetry run pytest -v -m ci
